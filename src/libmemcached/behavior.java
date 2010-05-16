@@ -11,7 +11,7 @@ public interface behavior {
      *  uint64_t data
      * );
      */
-    int memcached_behavior_set(memcached_st ptr, int flag, long data);
+    public int memcached_behavior_set(memcached_st ptr, int flag, long data);
 
     /**
      * C func: uint64_t memcached_behavior_get(
@@ -19,7 +19,7 @@ public interface behavior {
      *  const memcached_behavior_t flag
      * )
      */
-    long memcached_behavior_get(memcached_st ptr, long flag);
+    public long memcached_behavior_get(memcached_st ptr, long flag);
 
     /**
      * C func: memcached_return_t memcached_behavior_set_distribution(
@@ -27,14 +27,14 @@ public interface behavior {
      *  memcached_server_distribution_t type
      * )
      */
-    int memcached_behavior_set_distribution(memcached_st ptr, int type);
+    public int memcached_behavior_set_distribution(memcached_st ptr, int type);
 
     /**
      * C func: memcached_server_distribution_t memcached_behavior_get_distribution(
      *  memcached_st *ptr
      * )
      */
-    int memcached_behavior_get_distribution(memcached_st ptr);
+    public int memcached_behavior_get_distribution(memcached_st ptr);
 
     /**
      * C func: memcached_return_t memcached_behavior_set_key_hash(
@@ -42,14 +42,14 @@ public interface behavior {
      *  memcached_hash_t type
      * )
      */
-    int memcached_behavior_set_key_hash(memcached_st ptr, int type);
+    public int memcached_behavior_set_key_hash(memcached_st ptr, int type);
 
     /**
      * C func: memcached_hash_t memcached_behavior_get_key_hash(
      *  memcached_st *ptr
      * )
      */
-    int memcached_behavior_get_key_hash(memcached_st ptr);
+    public int memcached_behavior_get_key_hash(memcached_st ptr);
 
     /**
      * C func: memcached_return_t memcached_behavior_set_distribution_hash(
@@ -57,13 +57,13 @@ public interface behavior {
      *  memcached_hash_t type
      * )
      */
-    int memcached_behavior_set_distribution_hash(memcached_st ptr, int type);
+    public int memcached_behavior_set_distribution_hash(memcached_st ptr, int type);
 
     /**
      * C func: memcached_hash_t memcached_behavior_get_distribution_hash(
      *  memcached_st *ptr
      * )
      */
-    int memcached_behavior_get_distribution_hash(memcached_st ptr);
+    public int memcached_behavior_get_distribution_hash(memcached_st ptr);
 
 }

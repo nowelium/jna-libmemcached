@@ -164,7 +164,7 @@ public interface server {
      * );
      * @return
      */
-    int memcached_server_cursor(
+    public int memcached_server_cursor(
         memcached_st ptr,
         memcached_server_function callback,
         Pointer context,
@@ -179,7 +179,7 @@ public interface server {
      *  memcached_return_t *error
      * );
      */
-    memcached_server_instance_st memcached_server_by_key(
+    public memcached_server_instance_st memcached_server_by_key(
         memcached_st ptr,
         String key,
         NativeLong key_length,
@@ -189,12 +189,12 @@ public interface server {
     /**
      * C func: void memcached_server_error_reset(memcached_server_st *ptr)
      */
-    void memcached_server_error_reset(memcached_server_st ptr);
+    public void memcached_server_error_reset(memcached_server_st ptr);
 
     /**
      * C func: void memcached_server_free(memcached_server_st *ptr)
      */
-    void memcached_server_free(memcached_server_st ptr);
+    public void memcached_server_free(memcached_server_st ptr);
 
     /**
      * C func: memcached_server_st *memcached_server_clone(
@@ -202,7 +202,7 @@ public interface server {
      *  const memcached_server_st *source
      * );
      */
-    memcached_server_st memcached_server_clone(
+    public memcached_server_st memcached_server_clone(
         memcached_server_st destination,
         memcached_server_st source
     );
@@ -210,7 +210,7 @@ public interface server {
     /**
      * C func: memcached_server_instance_st memcached_server_get_last_disconnect(const memcached_st *ptr);
      */
-    memcached_server_instance_st memcached_server_get_last_disconnect(memcached_st ptr);
+    public memcached_server_instance_st memcached_server_get_last_disconnect(memcached_st ptr);
 
     /**
      * C func: memcached_return_t memcached_server_add_udp(
@@ -219,7 +219,7 @@ public interface server {
      *  in_port_t port
      * );
      */
-    int memcached_server_add_udp(
+    public int memcached_server_add_udp(
         memcached_st ptr,
         String hostname,
         int port
@@ -231,7 +231,7 @@ public interface server {
      *  const char *filename
      * );
      */
-    int memcached_server_add_unix_socket(
+    public int memcached_server_add_unix_socket(
         memcached_st ptr,
         String filename
     );
@@ -243,7 +243,7 @@ public interface server {
      *  in_port_t port
      * );
      */
-    int memcached_server_add(
+    public int memcached_server_add(
         memcached_st ptr,
         String hostname,
         int port
@@ -257,7 +257,7 @@ public interface server {
      *  uint32_t weight
      * );
      */
-    int memcached_server_add_udp_with_weight(
+    public int memcached_server_add_udp_with_weight(
         memcached_st ptr,
         String hostname,
         int port,
@@ -271,7 +271,7 @@ public interface server {
      *  uint32_t weight
      * );
      */
-    int memcached_server_add_unix_socket_with_weight(
+    public int memcached_server_add_unix_socket_with_weight(
         memcached_st ptr,
         String filename,
         int weight
@@ -285,7 +285,7 @@ public interface server {
      *  uint32_t weight
      * );
      */
-    int memcached_server_add_with_weight(
+    public int memcached_server_add_with_weight(
         memcached_st ptr,
         String hostname,
         int port,
@@ -295,20 +295,20 @@ public interface server {
     /**
      * C func: uint32_t memcached_server_response_count(memcached_server_instance_st self);
      */
-    int memcached_server_response_count(memcached_server_instance_st self);
+    public int memcached_server_response_count(memcached_server_instance_st self);
 
     /**
      * C func: const char *memcached_server_name(memcached_server_instance_st self);
      */
-    String memcached_server_name(memcached_server_instance_st self);
+    public String memcached_server_name(memcached_server_instance_st self);
 
     /**
      * C func: in_port_t memcached_server_port(memcached_server_instance_st self)
      */
-    int memcached_server_port(memcached_server_instance_st self);
+    public int memcached_server_port(memcached_server_instance_st self);
 
     /**
      * C func: const char *memcached_server_error(memcached_server_instance_st ptr)
      */
-    String memcached_server_error(memcached_server_instance_st ptr);
+    public String memcached_server_error(memcached_server_instance_st ptr);
 }

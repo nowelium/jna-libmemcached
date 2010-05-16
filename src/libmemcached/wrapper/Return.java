@@ -2,7 +2,7 @@ package libmemcached.wrapper;
 
 import libmemcached.constants.memcached_return;
 
-public enum MemcachedReturn {
+public enum Return {
     SUCCESS(memcached_return.MEMCACHED_SUCCESS),
     FAILURE(memcached_return.MEMCACHED_FAILURE),
     HOST_LOOKUP_FAILURE(memcached_return.MEMCACHED_HOST_LOOKUP_FAILURE),
@@ -44,15 +44,15 @@ public enum MemcachedReturn {
     ;
     
     private final int value;
-    private MemcachedReturn(int value){
+    private Return(int value){
         this.value = value;
     }
-    public int value(){
+    public int getValue(){
         return value;
     }
     
-    public static MemcachedReturn get(int memcached_return_value){
-        for(MemcachedReturn r: values()){
+    public static Return get(int memcached_return_value){
+        for(Return r: values()){
             if(r.value == memcached_return_value){
                 return r;
             }

@@ -2,7 +2,7 @@ package libmemcached.wrapper;
 
 import libmemcached.constants.memcached_behavior;
 
-public enum MemcachedBehavior {
+public enum Behavior {
     NO_BLOCK(memcached_behavior.MEMCACHED_BEHAVIOR_NO_BLOCK),
     TCP_NODELAY(memcached_behavior.MEMCACHED_BEHAVIOR_TCP_NODELAY),
     HASH(memcached_behavior.MEMCACHED_BEHAVIOR_HASH),
@@ -41,7 +41,7 @@ public enum MemcachedBehavior {
     ;
     
     private final int value;
-    private MemcachedBehavior(int value){
+    private Behavior(int value){
         this.value = value;
     }
     public int value(){

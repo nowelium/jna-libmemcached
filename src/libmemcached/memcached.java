@@ -45,56 +45,11 @@ public interface memcached extends
      */
     public void memcached_free(memcached_st ptr);
     
-    /**
-     * C func: memcached_return memcached_behavior_set(
-     *   memcached_st* ptr,
-     *   memcached_behavior flag,
-     *   uint64_t data
-     * );
-     */
-    public int memcached_behavior_set(memcached_st ptr, int flag, int data);
-
-    /**
-     * C func: memcached_return memcached_server_add_udp(
-     *   memcached_st* ptr,
-     *   const char* hostname,
-     *   unsigned int port
-     * );
-     */
-    public int memcached_server_add_udp(memcached_st ptr, String hostname, int port);
-    
-    /**
-     * C func: memcached_return memcached_server_add_unix_socket(
-     *   memcached_st* ptr,
-     *   const char* filename
-     * );
-     */
-    public int memcached_server_add_unix_socket(memcached_st ptr, String filename);
-    
-    /**
-     * C func: memcached_return memcached_server_add(
-     *   memcached_st* ptr,
-     *   const char* hostname,
-     *   unsigned int port
-     * );
-     */
-    public int memcached_server_add(memcached_st ptr, String hostname, int port);
-    
-    public int memcached_server_push(memcached_st ptr, memcached_server_st list);
-    
     public memcached_server_st.ByReference memcached_servers_parse(String strings);
     
     public memcached_server_st.ByReference memcached_server_list_append(memcached_server_st ptr, String hostname, int port, IntByReference error);
     
     public void memcached_server_list_free(memcached_server_st ptr);
-    
-    /**
-     * C func: char* memcached_strerror(
-     *  memcached_st* ptr,
-     *  memcached_return rc
-     * );
-     */
-    public String memcached_strerror(memcached_st ptr, int rc);
     
     /**
      * C func: memcached_return memcached_set(
