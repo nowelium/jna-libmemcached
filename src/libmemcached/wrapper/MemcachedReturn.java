@@ -1,6 +1,6 @@
 package libmemcached.wrapper;
 
-import libmemcached.memcached_constants.memcached_return;
+import libmemcached.constants.memcached_return;
 
 public enum MemcachedReturn {
     SUCCESS(memcached_return.MEMCACHED_SUCCESS),

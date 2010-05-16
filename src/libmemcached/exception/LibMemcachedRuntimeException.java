@@ -14,7 +14,7 @@ public class LibMemcachedRuntimeException extends RuntimeException {
     }
     
     public LibMemcachedRuntimeException(memcached_st mmc, int error){
-        this(LibMemcached.error(mmc, error)); 
+        this(LibMemcached.memcached.memcached_strerror(mmc, error)); 
     }
     
     public LibMemcachedRuntimeException(String message){

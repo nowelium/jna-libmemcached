@@ -2,7 +2,7 @@ package libmemcached;
 
 import libmemcached.exception.LibMemcachedRuntimeException;
 import libmemcached.memcached.memcached_st;
-import libmemcached.memcached_constants.memcached_return;
+import libmemcached.constants.memcached_return;
 
 import com.sun.jna.NativeLong;
 

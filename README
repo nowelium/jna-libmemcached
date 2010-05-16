@@ -2,6 +2,7 @@ jna-libmemcached
 ----
 
 libmemcached for JNA
+currently working @ libmemcached-0.40
 
 
 example

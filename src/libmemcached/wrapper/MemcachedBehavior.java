@@ -1,6 +1,6 @@
 package libmemcached.wrapper;
 
-import libmemcached.memcached_constants.memcached_behavior;
+import libmemcached.constants.memcached_behavior;
 
 public enum MemcachedBehavior {
     NO_BLOCK(memcached_behavior.MEMCACHED_BEHAVIOR_NO_BLOCK),
@@ -33,6 +33,11 @@ public enum MemcachedBehavior {
     USE_UDP(memcached_behavior.MEMCACHED_BEHAVIOR_USE_UDP),
     AUTO_EJECT_HOSTS(memcached_behavior.MEMCACHED_BEHAVIOR_AUTO_EJECT_HOSTS),
     NUMBER_OF_REPLICAS(memcached_behavior.MEMCACHED_BEHAVIOR_NUMBER_OF_REPLICAS),
+    RANDOMIZE_REPLICA_READ(memcached_behavior.MEMCACHED_BEHAVIOR_RANDOMIZE_REPLICA_READ),
+    CORK(memcached_behavior.MEMCACHED_BEHAVIOR_CORK),
+    TCP_KEEPALIVE(memcached_behavior.MEMCACHED_BEHAVIOR_TCP_KEEPALIVE),
+    TCP_KEEPIDLE(memcached_behavior.MEMCACHED_BEHAVIOR_TCP_KEEPIDLE),
+    MAX(memcached_behavior.MEMCACHED_BEHAVIOR_MAX),
     ;
     
     private final int value;

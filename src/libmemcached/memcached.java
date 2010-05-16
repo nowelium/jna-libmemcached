@@ -1,37 +1,39 @@
 package libmemcached;
 
-import libmemcached.memcached_result.memcached_result_st;
-import libmemcached.memcached_server.memcached_server_st;
-import libmemcached.memcached_types.memcached_calloc_function;
-import libmemcached.memcached_types.memcached_cleanup_func;
-import libmemcached.memcached_types.memcached_clone_func;
-import libmemcached.memcached_types.memcached_free_function;
-import libmemcached.memcached_types.memcached_malloc_function;
-import libmemcached.memcached_types.memcached_realloc_function;
-import libmemcached.memcached_types.memcached_trigger_delete_key;
-import libmemcached.memcached_types.memcached_trigger_key;
-
-import com.sun.jna.Library;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 
-public interface memcached extends Library {
-    
-    public static final int MEMCACHED_VERSION_STRING_LENGTH = 24;
-    
-    public static final String LIBMEMCACHED_VERSION_STRING = "0.31";
-    
-    /**
-     * C func: memcached_return memcached_version(memcached_st* ptr);
-     */
-    public int memcached_version(memcached_st ptr);
-    
-    /**
-     * C func: const char* memcached_lib_version(void);
-     */
-    public String memcached_lib_version();
+public interface memcached extends
+    visibility,
+    configure,
+    constants,
+    types,
+    string,
+    stats,
+    allocators,
+    analyze,
+    auto,
+    behavior,
+    callback,
+    delete,
+    dump,
+    fetch,
+    flush,
+    flush_buffers,
+    get,
+    hash,
+    parse,
+    quit,
+    result,
+    server,
+    server_list,
+    storage,
+    strerror,
+    verbosity,
+    version,
+    sasl {
     
     /**
      * C func: memcached_st* memcached_create(memcached_st* ptr);
