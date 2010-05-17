@@ -6,7 +6,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import libmemcached.constants;
 import libmemcached.memcached;
 import libmemcached.exception.LibMemcachedException;
-import libmemcached.memcached.memcached_st;
 import libmemcached.result.memcached_result_st;
 
 import com.sun.jna.NativeLong;
@@ -48,8 +47,6 @@ public class MemcachedStorage {
     
     protected final MemcachedClient memcached;
     
-    protected final memcached_st memcached_st;
-    
     protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     
     protected final Lock writeLock = lock.writeLock();
@@ -59,7 +56,6 @@ public class MemcachedStorage {
     protected MemcachedStorage(MemcachedClient memcached){
         this.handler = MemcachedClient.handler;
         this.memcached = memcached;
-        this.memcached_st = memcached.memcached_st;
     }
     
     public Result getResult(String key) throws LibMemcachedException {
@@ -69,7 +65,7 @@ public class MemcachedStorage {
         IntByReference error = new IntByReference();
         
         String result = handler.memcached_get(
-            memcached_st,
+            memcached.memcached_st,
             key, keyLength,
             valueLength,
             flags,
@@ -90,7 +86,7 @@ public class MemcachedStorage {
         IntByReference error = new IntByReference();
         
         String result = handler.memcached_get_by_key(
-            memcached_st,
+            memcached.memcached_st,
             masterKey, masterKeyLength,
             key, keyLength,
             valueLength,
@@ -117,7 +113,7 @@ public class MemcachedStorage {
     public ReturnType getMulti(String...keys) throws LibMemcachedException {
         NativeLong length = new NativeLong(keys.length);
         NativeLongByReference keyLength = new NativeLongByReference(length);
-        int rc = handler.memcached_mget(memcached_st, keys, keyLength, keys.length);
+        int rc = handler.memcached_mget(memcached.memcached_st, keys, keyLength, keys.length);
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached.error(rc));
         }
@@ -127,7 +123,7 @@ public class MemcachedStorage {
     public ReturnType getMultiByKey(String masterKey, String...keys) throws LibMemcachedException {
         NativeLong masterKeyLength = new NativeLong(masterKey.length());
         NativeLongByReference keyLength = new NativeLongByReference(new NativeLong(keys.length));
-        int rc = handler.memcached_mget_by_key(memcached_st, masterKey, masterKeyLength, keys, keyLength, keys.length);
+        int rc = handler.memcached_mget_by_key(memcached.memcached_st, masterKey, masterKeyLength, keys, keyLength, keys.length);
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached.error(rc));
         }
@@ -139,7 +135,7 @@ public class MemcachedStorage {
         try {
             NativeLong length = new NativeLong(keys.length);
             NativeLongByReference keyLength = new NativeLongByReference(length);
-            int rc = handler.memcached_mget(memcached_st, keys, keyLength, keys.length);
+            int rc = handler.memcached_mget(memcached.memcached_st, keys, keyLength, keys.length);
             if(!ReturnType.SUCCESS.equalValue(rc)){
                 throw new LibMemcachedException(memcached.error(rc));
             }
@@ -156,7 +152,7 @@ public class MemcachedStorage {
             NativeLong masterKeyLength = new NativeLong(masterKey.length());
             NativeLong length = new NativeLong(keys.length);
             NativeLongByReference keyLength = new NativeLongByReference(length);
-            int rc = handler.memcached_mget_by_key(memcached_st, masterKey, masterKeyLength, keys, keyLength, keys.length);
+            int rc = handler.memcached_mget_by_key(memcached.memcached_st, masterKey, masterKeyLength, keys, keyLength, keys.length);
             if(!ReturnType.SUCCESS.equalValue(rc)){
                 throw new LibMemcachedException(memcached.error(rc));
             }
@@ -174,7 +170,7 @@ public class MemcachedStorage {
         IntByReference flags = new IntByReference();
         IntByReference error = new IntByReference();
         String result = handler.memcached_fetch(
-            memcached_st,
+            memcached.memcached_st,
             returnKey, keyLength, valueLength, flags, error
         );
 
@@ -187,7 +183,7 @@ public class MemcachedStorage {
     
     public MemcachedResult fetchResult() throws LibMemcachedException {
         IntByReference error = new IntByReference();
-        memcached_result_st result_st = handler.memcached_fetch_result(memcached_st, null, error);
+        memcached_result_st result_st = handler.memcached_fetch_result(memcached.memcached_st, null, error);
         int rc = error.getValue();
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached.error(rc));
@@ -197,7 +193,7 @@ public class MemcachedStorage {
     
     public MemcachedResult fetchResult(MemcachedResult result) throws LibMemcachedException {
         IntByReference error = new IntByReference();
-        memcached_result_st result_st = handler.memcached_fetch_result(memcached_st, result.result_st, error);
+        memcached_result_st result_st = handler.memcached_fetch_result(memcached.memcached_st, result.result_st, error);
         int rc = error.getValue();
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached.error(rc));
@@ -220,7 +216,7 @@ public class MemcachedStorage {
         String result = null;
         do {
             result = handler.memcached_fetch(
-                memcached_st,
+                memcached.memcached_st,
                 returnKey, keyLength, valueLength, flags, error
             );
             int err = error.getValue();
@@ -235,7 +231,7 @@ public class MemcachedStorage {
     public ReturnType delete(String key, int expiration){
         NativeLong keyLength = new NativeLong(key.length());
         int rc = handler.memcached_delete(
-            memcached_st,
+            memcached.memcached_st,
             key, keyLength,
             expiration
         );
@@ -246,7 +242,7 @@ public class MemcachedStorage {
         NativeLong masterKeyLength = new NativeLong(masterKey.length());
         NativeLong keyLength = new NativeLong(key.length());
         int rc = handler.memcached_delete_by_key(
-            memcached_st,
+            memcached.memcached_st,
             masterKey, masterKeyLength,
             key, keyLength,
             expiration
@@ -257,7 +253,7 @@ public class MemcachedStorage {
     public ReturnType increment(String key, int offset, long value){
         NativeLong keyLength = new NativeLong(key.length());
         int rc = handler.memcached_increment(
-            memcached_st,
+            memcached.memcached_st,
             key, keyLength,
             offset,
             value
@@ -268,7 +264,7 @@ public class MemcachedStorage {
     public ReturnType incrementWithInitial(String key, int offset, long initial, int expiration, long value){
         NativeLong keyLength = new NativeLong(key.length());
         int rc = handler.memcached_increment_with_initial(
-            memcached_st,
+            memcached.memcached_st,
             key, keyLength,
             offset,
             initial,
@@ -281,7 +277,7 @@ public class MemcachedStorage {
     public ReturnType decrement(String key, int offset, long value){
         NativeLong keyLength = new NativeLong(key.length());
         int rc = handler.memcached_decrement(
-            memcached_st,
+            memcached.memcached_st,
             key, keyLength,
             offset,
             value
@@ -292,7 +288,7 @@ public class MemcachedStorage {
     public ReturnType decrementWithInitial(String key, int offset, long initial, int expiration, long value){
         NativeLong keyLength = new NativeLong(key.length());
         int rc = handler.memcached_decrement_with_initial(
-            memcached_st,
+            memcached.memcached_st,
             key, keyLength,
             offset,
             initial,
@@ -306,7 +302,7 @@ public class MemcachedStorage {
         NativeLong keyLength = new NativeLong(key.length());
         NativeLong valueLength = new NativeLong(value.length());
         int rc = handler.memcached_set(
-            memcached_st,
+            memcached.memcached_st,
             key, keyLength,
             value, valueLength,
             expiration, flags
@@ -319,7 +315,7 @@ public class MemcachedStorage {
         NativeLong keyLength = new NativeLong(key.length());
         NativeLong valueLength = new NativeLong(value.length());
         int rc = handler.memcached_set_by_key(
-            memcached_st,
+            memcached.memcached_st,
             masterKey, masterKeyLength,
             key, keyLength,
             value, valueLength,
@@ -332,7 +328,7 @@ public class MemcachedStorage {
         NativeLong keyLength = new NativeLong(key.length());
         NativeLong valueLength = new NativeLong(value.length());
         int rc = handler.memcached_add(
-            memcached_st,
+            memcached.memcached_st,
             key, keyLength,
             value, valueLength,
             expiration, flags
@@ -345,7 +341,7 @@ public class MemcachedStorage {
         NativeLong keyLength = new NativeLong(key.length());
         NativeLong valueLength = new NativeLong(value.length());
         int rc = handler.memcached_add_by_key(
-            memcached_st,
+            memcached.memcached_st,
             masterKey, masterKeyLength,
             key, keyLength,
             value, valueLength,
@@ -358,7 +354,7 @@ public class MemcachedStorage {
         NativeLong keyLength = new NativeLong(key.length());
         NativeLong valueLength = new NativeLong(value.length());
         int rc = handler.memcached_replace(
-            memcached_st,
+            memcached.memcached_st,
             key, keyLength,
             value, valueLength,
             expiration, flags
@@ -371,7 +367,7 @@ public class MemcachedStorage {
         NativeLong keyLength = new NativeLong(key.length());
         NativeLong valueLength = new NativeLong(value.length());
         int rc = handler.memcached_replace_by_key(
-            memcached_st,
+            memcached.memcached_st,
             masterKey, masterKeyLength,
             key, keyLength,
             value, valueLength,
@@ -384,7 +380,7 @@ public class MemcachedStorage {
         NativeLong keyLength = new NativeLong(key.length());
         NativeLong valueLength = new NativeLong(value.length());
         int rc = handler.memcached_append(
-            memcached_st,
+            memcached.memcached_st,
             key, keyLength,
             value, valueLength,
             expiration, flags
@@ -397,7 +393,7 @@ public class MemcachedStorage {
         NativeLong keyLength = new NativeLong(key.length());
         NativeLong valueLength = new NativeLong(value.length());
         int rc = handler.memcached_append_by_key(
-            memcached_st,
+            memcached.memcached_st,
             masterKey, masterKeyLength,
             key, keyLength,
             value, valueLength,
@@ -410,7 +406,7 @@ public class MemcachedStorage {
         NativeLong keyLength = new NativeLong(key.length());
         NativeLong valueLength = new NativeLong(value.length());
         int rc = handler.memcached_prepend(
-            memcached_st,
+            memcached.memcached_st,
             key, keyLength,
             value, valueLength,
             expiration, flags
@@ -423,7 +419,7 @@ public class MemcachedStorage {
         NativeLong keyLength = new NativeLong(key.length());
         NativeLong valueLength = new NativeLong(value.length());
         int rc = handler.memcached_prepend_by_key(
-            memcached_st,
+            memcached.memcached_st,
             masterKey, masterKeyLength,
             key, keyLength,
             value, valueLength,
@@ -436,7 +432,7 @@ public class MemcachedStorage {
         NativeLong keyLength = new NativeLong(key.length());
         NativeLong valueLength = new NativeLong(value.length());
         int rc = handler.memcached_cas(
-            memcached_st,
+            memcached.memcached_st,
             key, keyLength,
             value, valueLength,
             expiration, flags, cas
@@ -449,7 +445,7 @@ public class MemcachedStorage {
         NativeLong keyLength = new NativeLong(key.length());
         NativeLong valueLength = new NativeLong(value.length());
         int rc = handler.memcached_cas_by_key(
-            memcached_st,
+            memcached.memcached_st,
             masterKey,masterKeyLength,
             key, keyLength,
             value, valueLength,
