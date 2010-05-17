@@ -2,7 +2,7 @@ package libmemcached;
 
 import libmemcached.exception.LibMemcachedRuntimeException;
 import libmemcached.memcached.memcached_st;
-import libmemcached.memcached_constants.memcached_return;
+import libmemcached.constants.memcached_return;
 
 import com.sun.jna.NativeLong;
 
@@ -25,7 +25,7 @@ public class Example {
             int rc = memcached.memcached_set(mmc, key, keylen, value, valuelen, 10, 0);
             if (memcached_return.MEMCACHED_SUCCESS != rc && memcached_return.MEMCACHED_BUFFERED != rc) {
                 memcached.memcached_free(mmc);
-                throw new LibMemcachedRuntimeException(mmc, rc);
+                throw new LibMemcachedRuntimeException(memcached.memcached_strerror(mmc, rc));
             }
         }
         memcached.memcached_free(mmc);
