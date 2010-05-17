@@ -3,7 +3,6 @@ package libmemcached;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
-import com.sun.jna.ptr.IntByReference;
 
 public interface memcached extends
     visibility,
@@ -34,39 +33,6 @@ public interface memcached extends
     verbosity,
     version,
     sasl {
-    
-    /**
-     * C func: memcached_st* memcached_create(memcached_st* ptr);
-     */
-    public memcached_st memcached_create(memcached_st ptr);
-    
-    /**
-     * C func: void memcached_free(memcached_st* ptr);
-     */
-    public void memcached_free(memcached_st ptr);
-    
-    public memcached_server_st.ByReference memcached_servers_parse(String strings);
-    
-    public memcached_server_st.ByReference memcached_server_list_append(memcached_server_st ptr, String hostname, int port, IntByReference error);
-    
-    public void memcached_server_list_free(memcached_server_st ptr);
-    
-    /**
-     * C func: memcached_return memcached_set(
-     *     memcached_st* ptr,
-     *     const char* key, size_t key_length,
-     *     const char* value, size_t value_length,
-     *     time_t expiration,
-     *     uint32_t flags
-     * )
-     */
-    public int memcached_set(
-        memcached_st ptr,
-        String key, NativeLong key_length,
-        String value, NativeLong value_length,
-        int expiration,
-        int flags
-    );
     
     public static class memcached_st extends Structure {
         // C type: uint8_t
@@ -176,5 +142,61 @@ public interface memcached extends
             
         }
     }
+    
+    /**
+     * C func: void memcached_servers_reset(memcached_st *ptr)
+     */
+    public void memcached_servers_reset(memcached_st ptr);
+
+    /**
+     * C func: memcached_st *memcached_create(memcached_st *ptr);
+     */
+    public memcached_st memcached_create(memcached_st ptr);
+
+    /**
+     * C func: void memcached_free(memcached_st *ptr);
+     */
+    public void memcached_free(memcached_st ptr);
+
+    /**
+     * C func: void memcached_reset_last_disconnected_server(memcached_st *ptr)
+     */
+    public void memcached_reset_last_disconnected_server(memcached_st ptr);
+
+    /**
+     * C func: memcached_st *memcached_clone(memcached_st *clone, const memcached_st *ptr)
+     */
+    public memcached_st memcached_clone(memcached_st clone, memcached_st ptr);
+
+    /**
+     * C func: void *memcached_get_user_data(const memcached_st *ptr)
+     */
+    public void memcached_get_user_data(memcached_st ptr);
+
+    /**
+     * C func: void *memcached_set_user_data(memcached_st *ptr, void *data)
+     */
+    public void memcached_set_user_data(memcached_st ptr, Pointer data);
+
+    /**
+     * C func: memcached_return_t memcached_push(memcached_st *destination, const memcached_st *source)
+     */
+    public int memcached_push(memcached_st destination, memcached_st source);
+
+    /**
+     * C func: memcached_server_instance_st memcached_server_instance_by_position(
+     *  const memcached_st *ptr,
+     *  uint32_t server_key
+     * )
+     */
+    public memcached_server_instance_st memcached_server_instance_by_position(
+        memcached_st ptr,
+        int server_key
+    );
+
+    /**
+     * C func: uint32_t memcached_server_count(const memcached_st *)
+     */
+    public int memcached_server_count(memcached_st ptr);
     
 }

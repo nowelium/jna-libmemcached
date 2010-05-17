@@ -137,7 +137,7 @@ public interface constants {
         public static final int MEMCACHED_CALLBACK_MAX = 9;
     }
     
-    public static interface memcached_hash_t {
+    public static interface memcached_hash {
         public static final int MEMCACHED_HASH_DEFAULT = 0;
         public static final int MEMCACHED_HASH_MD5 = 1;
         public static final int MEMCACHED_HASH_CRC = 2;
@@ -152,7 +152,7 @@ public interface constants {
         public static final int MEMCACHED_HASH_MAX = 11;
     }
     
-    public static interface memcached_connection_t {
+    public static interface memcached_connection {
         public static final int MEMCACHED_CONNECTION_UNKNOWN = 0;
         public static final int MEMCACHED_CONNECTION_TCP = 1;
         public static final int MEMCACHED_CONNECTION_UDP = 2;
