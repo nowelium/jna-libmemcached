@@ -31,5 +31,37 @@ public class MemcachedServer {
         return newServer;
     }
 
+    public String getHostName(){
+        return new String(server_st.hostname);
+    }
+    
+    public int getPort(){
+        return server_st.port;
+    }
+    
+    public int getWeight(){
+        return server_st.weight;
+    }
+    
+    public byte getMajorVersion(){
+        return server_st.major_version;
+    }
+    
+    public byte getMicroVersion(){
+        return server_st.micro_version;
+    }
+    
+    public byte getMinorVersion(){
+        return server_st.minor_version;
+    }
+    
+    public ConnectionType getType(){
+        return ConnectionType.get(server_st.type);
+    }
+    
+    public ReturnType remove(){
+        int rc = handler.memcached_server_remove(server_st);
+        return ReturnType.get(rc);
+    }
 
 }

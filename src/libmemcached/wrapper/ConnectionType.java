@@ -17,5 +17,14 @@ public enum ConnectionType {
     public int getValue(){
         return value;
     }
+    
+    public static ConnectionType get(int connection_type_value){
+        for(ConnectionType ct: values()){
+            if(ct.value == connection_type_value){
+                return ct;
+            }
+        }
+        return MAX;
+    }
 
 }
