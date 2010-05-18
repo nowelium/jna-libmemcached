@@ -5,7 +5,7 @@ import libmemcached.wrapper.MemcachedClient;
 import libmemcached.wrapper.MemcachedServerList;
 import libmemcached.wrapper.MemcachedStorage;
 
-public class Servers {
+public class Servers_wrapper {
     
     public static void main(String...args){
 //        memcached memcached = LibMemcached.memcached;

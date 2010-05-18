@@ -8,7 +8,9 @@ import libmemcached.memcached;
 import libmemcached.compat.size_t;
 import libmemcached.compat.time_t;
 import libmemcached.exception.LibMemcachedException;
+import libmemcached.exception.LibMemcachedRuntimeException;
 import libmemcached.result.memcached_result_st;
+import libmemcached.wrapper.type.ReturnType;
 
 import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
@@ -61,6 +63,10 @@ public class MemcachedStorage {
     }
     
     public Result getResult(String key) throws LibMemcachedException {
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t keyLength = new size_t(key.length());
         NativeLongByReference valueLength = new NativeLongByReference();
         IntByReference flags = new IntByReference();
@@ -81,6 +87,13 @@ public class MemcachedStorage {
     }
     
     public Result getResultByKey(String masterKey, String key) throws LibMemcachedException {
+        if(null == masterKey){
+            throw new LibMemcachedRuntimeException("masterKey was null");
+        }
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t masterKeyLength = new size_t(masterKey.length());
         size_t keyLength = new size_t(key.length());
         NativeLongByReference valueLength = new NativeLongByReference();
@@ -103,32 +116,41 @@ public class MemcachedStorage {
     }
     
     public String get(String key) throws LibMemcachedException {
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         Result result = getResult(key);
         return result.getValue();
     }
     
     public String getByKey(String masterKey, String key) throws LibMemcachedException {
+        if(null == masterKey){
+            throw new LibMemcachedRuntimeException("masterKey was null");
+        }
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         Result result = getResultByKey(masterKey, key);
         return result.getValue();
     }
     
-    public ReturnType getMulti(String...keys) throws LibMemcachedException {
+    public ReturnType getMulti(String...keys) {
         NativeLong length = new NativeLong(keys.length);
         NativeLongByReference keyLength = new NativeLongByReference(length);
         int rc = handler.memcached_mget(memcached.memcached_st, keys, keyLength, keys.length);
-        if(!ReturnType.SUCCESS.equalValue(rc)){
-            throw new LibMemcachedException(memcached.error(rc));
-        }
         return ReturnType.get(rc);
     }
     
-    public ReturnType getMultiByKey(String masterKey, String...keys) throws LibMemcachedException {
+    public ReturnType getMultiByKey(String masterKey, String...keys) {
+        if(null == masterKey){
+            throw new LibMemcachedRuntimeException("masterKey was null");
+        }
+        
         size_t masterKeyLength = new size_t(masterKey.length());
         NativeLongByReference keyLength = new NativeLongByReference(new NativeLong(keys.length));
         int rc = handler.memcached_mget_by_key(memcached.memcached_st, masterKey, masterKeyLength, keys, keyLength, keys.length);
-        if(!ReturnType.SUCCESS.equalValue(rc)){
-            throw new LibMemcachedException(memcached.error(rc));
-        }
         return ReturnType.get(rc);
     }
     
@@ -149,6 +171,10 @@ public class MemcachedStorage {
     }
     
     public void getMultiByKey(Fetcher fetcher, String masterKey, String...keys) throws LibMemcachedException {
+        if(null == masterKey){
+            throw new LibMemcachedRuntimeException("masterKey was null");
+        }
+        
         readLock.lock();
         try {
             size_t masterKeyLength = new size_t(masterKey.length());
@@ -166,6 +192,10 @@ public class MemcachedStorage {
     }
     
     public Result fetchResult(int length) throws LibMemcachedException {
+        if(length < 0){
+            throw new LibMemcachedRuntimeException("length was lesser 0");
+        }
+        
         NativeLongByReference keyLength = new NativeLongByReference(new NativeLong(length));
         byte[] returnKey = new byte[constants.MEMCACHED_MAX_KEY];
         NativeLongByReference valueLength = new NativeLongByReference();
@@ -204,11 +234,19 @@ public class MemcachedStorage {
     }
     
     public String fetch(int length) throws LibMemcachedException {
+        if(length < 0){
+            throw new LibMemcachedRuntimeException("length was lesser 0");
+        }
+        
         Result result = fetchResult(length);
         return result.getValue();
     }
     
     public void fetch(int length, Fetcher fetcher) {
+        if(length < 0){
+            throw new LibMemcachedRuntimeException("length was lesser 0");
+        }
+        
         byte[] returnKey = new byte[constants.MEMCACHED_MAX_KEY];
         NativeLongByReference keyLength = new NativeLongByReference(new NativeLong(length));
         NativeLongByReference valueLength = new NativeLongByReference();
@@ -231,6 +269,10 @@ public class MemcachedStorage {
     }
     
     public ReturnType delete(String key, int expiration){
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t keyLength = new size_t(key.length());
         time_t expire = new time_t(expiration);
         int rc = handler.memcached_delete(
@@ -242,6 +284,13 @@ public class MemcachedStorage {
     }
     
     public ReturnType deleteByKey(String masterKey, String key, int expiration){
+        if(null == masterKey){
+            throw new LibMemcachedRuntimeException("masterKey was null");
+        }
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t masterKeyLength = new size_t(masterKey.length());
         size_t keyLength = new size_t(key.length());
         time_t expire = new time_t(expiration);
@@ -255,6 +304,10 @@ public class MemcachedStorage {
     }
     
     public ReturnType increment(String key, int offset, long value){
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t keyLength = new size_t(key.length());
         int rc = handler.memcached_increment(
             memcached.memcached_st,
@@ -266,6 +319,10 @@ public class MemcachedStorage {
     }
     
     public ReturnType incrementWithInitial(String key, int offset, long initial, int expiration, long value){
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t keyLength = new size_t(key.length());
         time_t expire = new time_t(expiration);
         int rc = handler.memcached_increment_with_initial(
@@ -280,6 +337,10 @@ public class MemcachedStorage {
     }
     
     public ReturnType decrement(String key, int offset, long value){
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t keyLength = new size_t(key.length());
         int rc = handler.memcached_decrement(
             memcached.memcached_st,
@@ -291,6 +352,10 @@ public class MemcachedStorage {
     }
     
     public ReturnType decrementWithInitial(String key, int offset, long initial, int expiration, long value){
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t keyLength = new size_t(key.length());
         time_t expire = new time_t(expiration);
         int rc = handler.memcached_decrement_with_initial(
@@ -305,6 +370,10 @@ public class MemcachedStorage {
     }
     
     public ReturnType set(String key, String value, int expiration, int flags){
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t keyLength = new size_t(key.length());
         size_t valueLength = new size_t(value.length());
         time_t expire = new time_t(expiration);
@@ -319,6 +388,13 @@ public class MemcachedStorage {
     }
     
     public ReturnType setByKey(String masterKey, String key, String value, int expiration, int flags){
+        if(null == masterKey){
+            throw new LibMemcachedRuntimeException("masterKey was null");
+        }
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t masterKeyLength = new size_t(masterKey.length());
         size_t keyLength = new size_t(key.length());
         size_t valueLength = new size_t(value.length());
@@ -335,6 +411,10 @@ public class MemcachedStorage {
     }
     
     public ReturnType add(String key, String value, int expiration, int flags){
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t keyLength = new size_t(key.length());
         size_t valueLength = new size_t(value.length());
         time_t expire = new time_t(expiration);
@@ -349,6 +429,13 @@ public class MemcachedStorage {
     }
     
     public ReturnType addByKey(String masterKey, String key, String value, int expiration, int flags){
+        if(null == masterKey){
+            throw new LibMemcachedRuntimeException("masterKey was null");
+        }
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t masterKeyLength = new size_t(masterKey.length());
         size_t keyLength = new size_t(key.length());
         size_t valueLength = new size_t(value.length());
@@ -365,6 +452,10 @@ public class MemcachedStorage {
     }
     
     public ReturnType replace(String key, String value, int expiration, int flags){
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t keyLength = new size_t(key.length());
         size_t valueLength = new size_t(value.length());
         time_t expire = new time_t(expiration);
@@ -379,6 +470,13 @@ public class MemcachedStorage {
     }
     
     public ReturnType replaceByKey(String masterKey, String key, String value, int expiration, int flags){
+        if(null == masterKey){
+            throw new LibMemcachedRuntimeException("masterKey was null");
+        }
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t masterKeyLength = new size_t(masterKey.length());
         size_t keyLength = new size_t(key.length());
         size_t valueLength = new size_t(value.length());
@@ -395,6 +493,10 @@ public class MemcachedStorage {
     }
     
     public ReturnType append(String key, String value, int expiration, int flags){
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t keyLength = new size_t(key.length());
         size_t valueLength = new size_t(value.length());
         time_t expire = new time_t(expiration);
@@ -409,6 +511,13 @@ public class MemcachedStorage {
     }
     
     public ReturnType appendByKey(String masterKey, String key, String value, int expiration, int flags){
+        if(null == masterKey){
+            throw new LibMemcachedRuntimeException("masterKey was null");
+        }
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t masterKeyLength = new size_t(masterKey.length());
         size_t keyLength = new size_t(key.length());
         size_t valueLength = new size_t(value.length());
@@ -425,6 +534,10 @@ public class MemcachedStorage {
     }
     
     public ReturnType prepend(String key, String value, int expiration, int flags){
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t keyLength = new size_t(key.length());
         size_t valueLength = new size_t(value.length());
         time_t expire = new time_t(expiration);
@@ -439,6 +552,13 @@ public class MemcachedStorage {
     }
     
     public ReturnType prependByKey(String masterKey, String key, String value, int expiration, int flags){
+        if(null == masterKey){
+            throw new LibMemcachedRuntimeException("masterKey was null");
+        }
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t masterKeyLength = new size_t(masterKey.length());
         size_t keyLength = new size_t(key.length());
         size_t valueLength = new size_t(value.length());
@@ -455,6 +575,10 @@ public class MemcachedStorage {
     }
     
     public ReturnType cas(String key, String value, int expiration, int flags, long cas){
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t keyLength = new size_t(key.length());
         size_t valueLength = new size_t(value.length());
         time_t expire = new time_t(expiration);
@@ -470,6 +594,13 @@ public class MemcachedStorage {
     }
     
     public ReturnType casByKey(String masterKey, String key, String value, int expiration, int flags, long cas){
+        if(null == masterKey){
+            throw new LibMemcachedRuntimeException("masterKey was null");
+        }
+        if(null == key){
+            throw new LibMemcachedRuntimeException("key was null");
+        }
+        
         size_t masterKeyLength = new size_t(masterKey.length());
         size_t keyLength = new size_t(key.length());
         size_t valueLength = new size_t(value.length());
@@ -483,6 +614,12 @@ public class MemcachedStorage {
             flags,
             cas
         );
+        return ReturnType.get(rc);
+    }
+    
+    public ReturnType flush(int expiration){
+        time_t expire = new time_t(expiration);
+        int rc = handler.memcached_flush(memcached.memcached_st, expire);
         return ReturnType.get(rc);
     }
 

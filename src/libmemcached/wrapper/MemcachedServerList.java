@@ -6,6 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import libmemcached.memcached;
 import libmemcached.exception.LibMemcachedException;
 import libmemcached.types.memcached_server_list_st;
+import libmemcached.wrapper.type.ReturnType;
 
 import com.sun.jna.ptr.IntByReference;
 

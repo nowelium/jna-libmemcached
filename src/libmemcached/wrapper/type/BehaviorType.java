@@ -1,8 +1,8 @@
-package libmemcached.wrapper;
+package libmemcached.wrapper.type;
 
 import libmemcached.constants.memcached_behavior;
 
-public enum BehaviorType {
+public enum BehaviorType implements Type<BehaviorType> {
     NO_BLOCK(memcached_behavior.MEMCACHED_BEHAVIOR_NO_BLOCK),
     TCP_NODELAY(memcached_behavior.MEMCACHED_BEHAVIOR_TCP_NODELAY),
     HASH(memcached_behavior.MEMCACHED_BEHAVIOR_HASH),
@@ -40,12 +40,17 @@ public enum BehaviorType {
     MAX(memcached_behavior.MEMCACHED_BEHAVIOR_MAX),
     ;
     
+    private static final Map<BehaviorType> map = new Map<BehaviorType>(BehaviorType.class);
     private final int value;
     private BehaviorType(int value){
         this.value = value;
     }
-    public int value(){
+    public int getValue(){
         return value;
+    }
+    
+    public static BehaviorType get(int behavior_value){
+        return map.get(behavior_value);
     }
 
 }

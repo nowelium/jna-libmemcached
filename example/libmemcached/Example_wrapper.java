@@ -3,20 +3,16 @@ package libmemcached;
 import libmemcached.exception.LibMemcachedException;
 import libmemcached.wrapper.MemcachedClient;
 import libmemcached.wrapper.MemcachedStorage;
-import libmemcached.wrapper.ReturnType;
+import libmemcached.wrapper.type.ReturnType;
 
-public class Wrapper {
+public class Example_wrapper {
     public static void main(String...args){
         MemcachedClient client = new MemcachedClient();
         System.out.println(client.libraryVersion());
-        try {
-            client.addServer("localhost", 11211);
-        } catch(LibMemcachedException e){
-            e.printStackTrace();
-        }
+        ReturnType err = client.addServer("localhost", 11211);
+        System.out.println(err);
         
         MemcachedStorage storage = client.getStorage();
-        
         ReturnType rt = storage.set("hoge", "1234", 10, 0);
         System.out.println(rt);
         

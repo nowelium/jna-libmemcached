@@ -1,7 +1,10 @@
 package libmemcached.wrapper;
 
 import libmemcached.memcached;
+import libmemcached.compat.size_t;
+import libmemcached.compat.time_t;
 import libmemcached.result.memcached_result_st;
+import libmemcached.wrapper.type.ReturnType;
 
 public class MemcachedResult {
     
@@ -23,24 +26,43 @@ public class MemcachedResult {
         handler.memcached_result_free(result_st);
     }
     
-    public int getFlags(){
-        return result_st.item_flags;
-    }
-    
-    public int getExpiration(){
-        return result_st.item_expiration.value;
-    }
-    
     public String getKey(){
-        return new String(result_st.item_key);
+        return handler.memcached_result_key_value(result_st);
     }
     
-    public long length(){
-        return result_st.key_length.longValue();
+    public long getKeyLength(){
+        return handler.memcached_result_key_length(result_st).longValue();
+    }
+    
+    public String getValue(){
+        return handler.memcached_result_value(result_st);
+    }
+    
+    public long getLength(){
+        return handler.memcached_result_length(result_st).longValue();
     }
     
     public long getCAS(){
-        return result_st.item_cas;
+        return handler.memcached_result_cas(result_st);
+    }
+    
+    public int getFlags(){
+        return handler.memcached_result_flags(result_st);
+    }
+    
+    public ReturnType setValue(String value){
+        size_t length = new size_t(value.length());
+        int rc = handler.memcached_result_set_value(result_st, value, length);
+        return ReturnType.get(rc);
+    }
+    
+    public void setFlags(int flags){
+        handler.memcached_result_set_flags(result_st, flags);
+    }
+    
+    public void setExpiration(int expiration){
+        time_t expire = new time_t(expiration);
+        handler.memcached_result_set_expiration(result_st, expire);
     }
     
     public void reset(){

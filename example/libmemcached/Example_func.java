@@ -6,7 +6,7 @@ import libmemcached.constants.memcached_return;
 import libmemcached.exception.LibMemcachedRuntimeException;
 import libmemcached.memcached.memcached_st;
 
-public class Example {
+public class Example_func {
     public static void main(String...args){
         memcached memcached = LibMemcached.memcached;
         

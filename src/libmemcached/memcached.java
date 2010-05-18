@@ -3,6 +3,7 @@ package libmemcached;
 import libmemcached.compat.hashkit_st;
 import libmemcached.compat.size_t;
 import libmemcached.compat.time_t;
+import libmemcached.util.pool;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
@@ -35,7 +36,8 @@ public interface memcached extends
     strerror,
     verbosity,
     version,
-    sasl {
+    sasl,
+    pool {
     
     public static class memcached_st extends Structure {
         // C type: state

@@ -5,7 +5,6 @@ import libmemcached.compat.time_t;
 import libmemcached.memcached.memcached_st;
 import libmemcached.string.memcached_string_st;
 
-import com.sun.jna.NativeLong;
 import com.sun.jna.Structure;
 
 public interface result {
@@ -79,7 +78,7 @@ public interface result {
     /**
      * C func: size_t memcached_result_key_length(const memcached_result_st *self)
      */
-    public NativeLong memcached_result_key_length(memcached_result_st self);
+    public size_t memcached_result_key_length(memcached_result_st self);
 
     /**
      * C func: const char *memcached_result_value(const memcached_result_st *self)
@@ -89,7 +88,7 @@ public interface result {
     /**
      * C func: size_t memcached_result_length(const memcached_result_st *self)
      */
-    public NativeLong memcached_result_length(memcached_result_st self);
+    public size_t memcached_result_length(memcached_result_st self);
 
     /**
      * C func: uint32_t memcached_result_flags(const memcached_result_st *self)

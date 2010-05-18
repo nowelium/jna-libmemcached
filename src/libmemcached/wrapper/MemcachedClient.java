@@ -4,10 +4,11 @@ import libmemcached.LibMemcached;
 import libmemcached.memcached;
 import libmemcached.compat.size_t;
 import libmemcached.exception.LibMemcachedException;
-import libmemcached.exception.LibMemcachedRuntimeException;
 import libmemcached.memcached.memcached_st;
 import libmemcached.result.memcached_result_st;
-import libmemcached.server.memcached_server_st;
+import libmemcached.stats.memcached_stat_st;
+import libmemcached.types.memcached_server_instance_st;
+import libmemcached.wrapper.type.ReturnType;
 
 import com.sun.jna.ptr.IntByReference;
 
@@ -24,16 +25,18 @@ public class MemcachedClient {
     
     protected final MemcachedStorage storage = new MemcachedStorage(this);
     
+    protected final MemcachedBehavior behavior = new MemcachedBehavior(this);
+    
     public MemcachedClient(){
         this(handler.memcached_create(null));
     }
     
-    public MemcachedClient(MemcachedClient parent){
-        this(parent.memcached_st);
+    public MemcachedClient(MemcachedClient memcached){
+        this(memcached.memcached_st);
     }
     
-    protected MemcachedClient(memcached_st parent){
-        this.memcached_st = parent;
+    private MemcachedClient(memcached_st memcached_st){
+        this.memcached_st = memcached_st;
     }
 
     @Override
@@ -47,9 +50,13 @@ public class MemcachedClient {
         memcached_st source = this.memcached_st;
         memcached_st dest = handler.memcached_create(null);
         if(null == handler.memcached_clone(dest, source)){
-            throw new LibMemcachedRuntimeException("memcached_clone() failed.");
+            throw new CloneNotSupportedException("memcached_clone() failed.");
         }
         return new MemcachedClient(dest);
+    }
+    
+    protected MemcachedClient newInstance(memcached_st memcached_st){
+        return new MemcachedClient(memcached_st);
     }
     
     public MemcachedServerList getServerList(){
@@ -60,6 +67,10 @@ public class MemcachedClient {
         return storage;
     }
     
+    public MemcachedBehavior getBehavior(){
+        return behavior;
+    }
+    
     public String libraryVersion(){
         return handler.memcached_lib_version();
     }
@@ -68,29 +79,53 @@ public class MemcachedClient {
         return handler.memcached_version(memcached_st);
     }
     
+    public ReturnType verbosity(int verbosity){
+        int rc = handler.memcached_verbosity(memcached_st, verbosity);
+        return ReturnType.get(rc);
+    }
+    
     public String error(int rc){
         return handler.memcached_strerror(memcached_st, rc);
     }
     
-    public void addServer(String hostname, int port) throws LibMemcachedException {
+    public String error(ReturnType rt){
+        return handler.memcached_strerror(memcached_st, rt.getValue());
+    }
+    
+    public ReturnType addServer(String hostname, int port) {
         int rc = handler.memcached_server_add(memcached_st, hostname, port);
-        if(!ReturnType.SUCCESS.equalValue(rc)){
-            throw new LibMemcachedException(error(rc));
-        }
+        return ReturnType.get(rc);
     }
     
-    public void addUdpServer(String hostname, int port) throws LibMemcachedException {
+    public ReturnType addUdpServer(String hostname, int port) {
         int rc = handler.memcached_server_add_udp(memcached_st, hostname, port);
-        if(!ReturnType.SUCCESS.equalValue(rc)){
-            throw new LibMemcachedException(error(rc));
-        }
+        return ReturnType.get(rc);
     }
     
-    public void addUnixSocketServer(String filename) throws LibMemcachedException {
+    public ReturnType addUnixSocketServer(String filename) {
         int rc = handler.memcached_server_add_unix_socket(memcached_st, filename);
+        return ReturnType.get(rc);
+    }
+    
+    public MemcachedServer createServer(String key) throws LibMemcachedException {
+        size_t keyLength = new size_t(key.length());
+        IntByReference error = new IntByReference();
+        memcached_server_instance_st server_st = handler.memcached_server_by_key(memcached_st, key, keyLength, error);
+        int rc = error.getValue();
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(error(rc));
         }
+        return new MemcachedServer(this, server_st);
+    }
+    
+    public MemcachedStats createStats(String args) throws LibMemcachedException {
+        IntByReference error = new IntByReference();
+        memcached_stat_st stat_st = handler.memcached_stat(memcached_st, args, error);
+        int rc = error.getValue();
+        if(!ReturnType.SUCCESS.equalValue(rc)){
+            throw new LibMemcachedException(error(rc));
+        }
+        return new MemcachedStats(this, stat_st);
     }
     
     public MemcachedResult createResult(){
@@ -102,16 +137,8 @@ public class MemcachedClient {
         return new MemcachedResult(this, result_st);
     }
     
-    public MemcachedServer getServerByKey(String key) throws LibMemcachedException {
-        size_t keyLength = new size_t(key.length());
-        IntByReference error = new IntByReference();
-        memcached_server_st server_st = handler.memcached_server_by_key(memcached_st, key, keyLength, error);
-        
-        int rc = error.getValue();
-        if(!ReturnType.SUCCESS.equalValue(rc)){
-            throw new LibMemcachedException(error(rc));
-        }
-        return new MemcachedServer(this, server_st);
+    public void quit(){
+        handler.memcached_quit(memcached_st);
     }
 
 }

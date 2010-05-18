@@ -58,6 +58,13 @@ public interface stats {
         public byte[] version = new byte[constants.MEMCACHED_VERSION_STRING_LENGTH];
         // C type: memcached_st*
         public memcached_st.ByReference root;
+        
+        public static class ByReference extends memcached_stat_st implements Structure.ByReference {
+
+        }
+        public static class ByValue extends memcached_stat_st implements Structure.ByValue {
+
+        }
     }
     
     /**

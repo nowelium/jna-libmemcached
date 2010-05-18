@@ -1,8 +1,8 @@
-package libmemcached.wrapper;
+package libmemcached.wrapper.type;
 
 import libmemcached.constants.memcached_return;
 
-public enum ReturnType {
+public enum ReturnType implements Type<DistributionType> {
     SUCCESS(memcached_return.MEMCACHED_SUCCESS),
     FAILURE(memcached_return.MEMCACHED_FAILURE),
     HOST_LOOKUP_FAILURE(memcached_return.MEMCACHED_HOST_LOOKUP_FAILURE),
@@ -43,6 +43,7 @@ public enum ReturnType {
     MAXIMUM_RETURN(memcached_return.MEMCACHED_MAXIMUM_RETURN)
     ;
     
+    private static final Map<ReturnType> map = new Map<ReturnType>(ReturnType.class);
     private final int value;
     private ReturnType(int value){
         this.value = value;
@@ -56,12 +57,7 @@ public enum ReturnType {
     }
     
     public static ReturnType get(int memcached_return_value){
-        for(ReturnType r: values()){
-            if(r.value == memcached_return_value){
-                return r;
-            }
-        }
-        return MAXIMUM_RETURN;
+        return map.get(memcached_return_value);
     }
 
 }

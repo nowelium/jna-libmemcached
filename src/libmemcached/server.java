@@ -174,7 +174,7 @@ public interface server {
      *  const memcached_server_st *source
      * );
      */
-    public memcached_server_st memcached_server_clone(
+    public memcached_server_instance_st memcached_server_clone(
         memcached_server_st destination,
         memcached_server_st source
     );
