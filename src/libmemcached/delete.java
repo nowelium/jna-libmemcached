@@ -1,7 +1,7 @@
 package libmemcached;
 
-import com.sun.jna.NativeLong;
-
+import libmemcached.compat.size_t;
+import libmemcached.compat.time_t;
 import libmemcached.memcached.memcached_st;
 
 public interface delete {
@@ -16,8 +16,8 @@ public interface delete {
     public int memcached_delete(
         memcached_st ptr,
         String key,
-        NativeLong key_length,
-        int expiration
+        size_t key_length,
+        time_t expiration
     );
     
     /**
@@ -33,10 +33,10 @@ public interface delete {
     public int memcached_delete_by_key(
         memcached_st ptr, 
         String master_key,
-        NativeLong master_key_length,
+        size_t master_key_length,
         String key,
-        NativeLong key_length,
-        int expiration
+        size_t key_length,
+        time_t expiration
     );
     
 }

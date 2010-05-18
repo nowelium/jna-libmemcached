@@ -1,5 +1,6 @@
 package libmemcached;
 
+import libmemcached.compat.size_t;
 import libmemcached.memcached.memcached_st;
 import libmemcached.result.memcached_result_st;
 import libmemcached.types.memcached_execute_function;
@@ -22,7 +23,7 @@ public interface get {
      */
     public String memcached_get(
         memcached_st ptr, 
-        String key, NativeLong key_length,
+        String key, size_t key_length,
         NativeLongByReference value_length, 
         IntByReference flags,
         IntByReference error
@@ -53,8 +54,8 @@ public interface get {
      */
     public String memcached_get_by_key(
         memcached_st ptr, 
-        String master_key, NativeLong master_key_length, 
-        String key, NativeLong key_length,
+        String master_key, size_t master_key_length, 
+        String key, size_t key_length,
         NativeLongByReference value_length, 
         IntByReference flags,
         IntByReference error
@@ -70,7 +71,7 @@ public interface get {
      */
     public int memcached_mget_by_key(
         memcached_st ptr,
-        String master_key, NativeLong master_key_length,
+        String master_key, size_t master_key_length,
         String[] keys, NativeLongByReference key_length, 
         int number_of_keys
     );

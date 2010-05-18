@@ -1,8 +1,8 @@
 package libmemcached;
 
+import libmemcached.compat.size_t;
+import libmemcached.compat.time_t;
 import libmemcached.memcached.memcached_st;
-
-import com.sun.jna.NativeLong;
 
 public interface storage {
     
@@ -17,9 +17,9 @@ public interface storage {
      */
     public int memcached_set(
         memcached_st ptr,
-        String key, NativeLong key_length,
-        String value, NativeLong value_length,
-        int expiration,
+        String key, size_t key_length,
+        String value, size_t value_length,
+        time_t expiration,
         int flags
     );
     
@@ -34,9 +34,9 @@ public interface storage {
      */
     public int memcached_add(
         memcached_st ptr,
-        String key, NativeLong key_length,
-        String value, NativeLong value_length, 
-        int expiration,
+        String key, size_t key_length,
+        String value, size_t value_length, 
+        time_t expiration,
         int flags
     );
     
@@ -51,9 +51,9 @@ public interface storage {
      */
     public int memcached_replace(
         memcached_st ptr,
-        String key, NativeLong key_length,
-        String value, NativeLong value_length,
-        int expiration,
+        String key, size_t key_length,
+        String value, size_t value_length,
+        time_t expiration,
         int flags
     );
 
@@ -68,9 +68,9 @@ public interface storage {
      */
     public int memcached_append(
         memcached_st ptr, 
-        String key, NativeLong key_length,
-        String value, NativeLong value_length, 
-        int expiration,
+        String key, size_t key_length,
+        String value, size_t value_length, 
+        time_t expiration,
         int flags
     );
 
@@ -85,9 +85,9 @@ public interface storage {
      */
     public int memcached_prepend(
         memcached_st ptr, 
-        String key, NativeLong key_length,
-        String value, NativeLong value_length, 
-        int expiration,
+        String key, size_t key_length,
+        String value, size_t value_length, 
+        time_t expiration,
         int flags
     );
 
@@ -103,9 +103,9 @@ public interface storage {
      */
     public int memcached_cas(
         memcached_st ptr, 
-        String key, NativeLong key_length,
-        String value, NativeLong value_length, 
-        int expiration,
+        String key, size_t key_length,
+        String value, size_t value_length, 
+        time_t expiration,
         int flags,
         long cas
     );
@@ -121,11 +121,11 @@ public interface storage {
      * );
      */
     public int memcached_set_by_key(
-        memcached_st ptr, 
-       String master_key, NativeLong master_key_length, 
-       String key, NativeLong key_length, 
-       String value, NativeLong value_length, 
-       int expiration,
+       memcached_st ptr, 
+       String master_key, size_t master_key_length, 
+       String key, size_t key_length, 
+       String value, size_t value_length, 
+       time_t expiration,
        int flags
    );
 
@@ -141,10 +141,10 @@ public interface storage {
      */
     public int memcached_add_by_key(
         memcached_st ptr, 
-        String master_key, NativeLong master_key_length,
-        String key, NativeLong key_length,
-        String value, NativeLong value_length, 
-        int expiration,
+        String master_key, size_t master_key_length,
+        String key, size_t key_length,
+        String value, size_t value_length, 
+        time_t expiration,
         int flags
     );
 
@@ -160,10 +160,10 @@ public interface storage {
      */
     public int memcached_replace_by_key(
         memcached_st ptr, 
-        String master_key, NativeLong master_key_length,
-        String key, NativeLong key_length,
-        String value, NativeLong value_length, 
-        int expiration,
+        String master_key, size_t master_key_length,
+        String key, size_t key_length,
+        String value, size_t value_length, 
+        time_t expiration,
         int flags
     );
 
@@ -179,10 +179,10 @@ public interface storage {
      */
     public int memcached_prepend_by_key(
         memcached_st ptr, 
-        String master_key, NativeLong master_key_length,
-        String key, NativeLong key_length,
-        String value, NativeLong value_length, 
-        int expiration,
+        String master_key, size_t master_key_length,
+        String key, size_t key_length,
+        String value, size_t value_length, 
+        time_t expiration,
         int flags
     );
 
@@ -198,10 +198,10 @@ public interface storage {
      */
     public int memcached_append_by_key(
         memcached_st ptr,
-        String master_key, NativeLong master_key_length,
-        String key, NativeLong key_length,
-        String value, NativeLong value_length, 
-        int expiration,
+        String master_key, size_t master_key_length,
+        String key, size_t key_length,
+        String value, size_t value_length, 
+        time_t expiration,
         int flags
     );
 
@@ -218,10 +218,10 @@ public interface storage {
      */
     public int memcached_cas_by_key(
         memcached_st ptr, 
-        String master_key, NativeLong master_key_length,
-        String key, NativeLong key_length,
-        String value, NativeLong value_length, 
-        int expiration,
+        String master_key, size_t master_key_length,
+        String key, size_t key_length,
+        String value, size_t value_length, 
+        time_t expiration,
         int flags,
         long cas
     );

@@ -27,6 +27,13 @@ public interface analyze {
         public long most_used_bytes;
         // C type: uint64_t
         public long least_remaining_bytes;
+        
+        public static class ByReference extends memcached_analysis_st implements Structure.ByReference {
+            
+        }
+        public static class ByValue extends memcached_analysis_st implements Structure.ByValue {
+            
+        }
     }
     
     /**

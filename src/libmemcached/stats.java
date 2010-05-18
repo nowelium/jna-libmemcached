@@ -113,5 +113,4 @@ public interface stats {
         IntByReference error
     );
 
-
 }

@@ -1,15 +1,15 @@
 package libmemcached.wrapper;
 
-import com.sun.jna.NativeLong;
-import com.sun.jna.ptr.IntByReference;
-
 import libmemcached.LibMemcached;
 import libmemcached.memcached;
+import libmemcached.compat.size_t;
 import libmemcached.exception.LibMemcachedException;
 import libmemcached.exception.LibMemcachedRuntimeException;
 import libmemcached.memcached.memcached_st;
 import libmemcached.result.memcached_result_st;
 import libmemcached.server.memcached_server_st;
+
+import com.sun.jna.ptr.IntByReference;
 
 public class MemcachedClient {
     
@@ -103,7 +103,7 @@ public class MemcachedClient {
     }
     
     public MemcachedServer getServerByKey(String key) throws LibMemcachedException {
-        NativeLong keyLength = new NativeLong(key.length());
+        size_t keyLength = new size_t(key.length());
         IntByReference error = new IntByReference();
         memcached_server_st server_st = handler.memcached_server_by_key(memcached_st, key, keyLength, error);
         

@@ -1,10 +1,10 @@
 package libmemcached;
 
+import libmemcached.compat.size_t;
+import libmemcached.compat.time_t;
+import libmemcached.constants.memcached_return;
 import libmemcached.exception.LibMemcachedRuntimeException;
 import libmemcached.memcached.memcached_st;
-import libmemcached.constants.memcached_return;
-
-import com.sun.jna.NativeLong;
 
 public class Example {
     public static void main(String...args){
@@ -16,13 +16,12 @@ public class Example {
         memcached.memcached_server_add(mmc, "localhost", 11211);
         {
             String key = "hoge";
-            NativeLong keylen = new NativeLong();
-            keylen.setValue(key.length());
+            size_t keylen = new size_t(key.length());
             String value = "1234";
-            NativeLong valuelen = new NativeLong();
-            valuelen.setValue(value.length());
+            size_t valuelen = new size_t(value.length());
+            time_t expiration = new time_t(10);
             
-            int rc = memcached.memcached_set(mmc, key, keylen, value, valuelen, 10, 0);
+            int rc = memcached.memcached_set(mmc, key, keylen, value, valuelen, expiration, 0);
             if (memcached_return.MEMCACHED_SUCCESS != rc && memcached_return.MEMCACHED_BUFFERED != rc) {
                 memcached.memcached_free(mmc);
                 throw new LibMemcachedRuntimeException(memcached.memcached_strerror(mmc, rc));

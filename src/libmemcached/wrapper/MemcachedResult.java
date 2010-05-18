@@ -28,7 +28,7 @@ public class MemcachedResult {
     }
     
     public int getExpiration(){
-        return result_st.item_expiration;
+        return result_st.item_expiration.value;
     }
     
     public String getKey(){

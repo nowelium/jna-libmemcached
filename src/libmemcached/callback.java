@@ -1,20 +1,27 @@
 package libmemcached;
 
 import libmemcached.memcached.memcached_st;
-import libmemcached.types.memcached_execute_function;
 
 import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 
 public interface callback {
     
-    public static class memcached_callback_st {
-        // C type: memcached_execute_fn *callback
-        public memcached_execute_function callback;
-        // C type: void *context
+    public static class memcached_callback_st extends Structure {
+        // C type: memcached_execute_fn* in memcached_execute_function
+        public Pointer callback;
+        // C type: void*
         public Pointer context;
         // C type: uint32_t
         public int number_of_callback;
+        
+        public static class ByReference extends memcached_callback_st implements Structure.ByReference {
+            
+        }
+        public static class ByValue extends memcached_callback_st implements Structure.ByValue {
+            
+        }
     }
     
     /**

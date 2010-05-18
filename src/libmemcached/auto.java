@@ -1,7 +1,7 @@
 package libmemcached;
 
-import com.sun.jna.NativeLong;
-
+import libmemcached.compat.size_t;
+import libmemcached.compat.time_t;
 import libmemcached.memcached.memcached_st;
 
 public interface auto {
@@ -17,10 +17,11 @@ public interface auto {
     public int memcached_decrement(
         memcached_st ptr, 
         String key,
-        NativeLong key_length,
+        size_t key_length,
         int offset,
         long value
     );
+    
     /**
      * C func: memcached_return memcached_decrement_with_initial(
      *  memcached_st *ptr,
@@ -35,10 +36,10 @@ public interface auto {
     public int memcached_decrement_with_initial(
         memcached_st ptr,
         String key,
-        NativeLong key_length,
+        size_t key_length,
         long offset,
         long initial,
-        int expiration,
+        time_t expiration,
         long value
     );
     
@@ -54,7 +55,7 @@ public interface auto {
     public int memcached_increment(
         memcached_st ptr, 
         String key,
-        NativeLong key_length,
+        size_t key_length,
         int offset,
         long value
     );
@@ -73,10 +74,10 @@ public interface auto {
     public int memcached_increment_with_initial(
         memcached_st ptr,
         String key,
-        NativeLong key_length,
+        size_t key_length,
         long offset,
         long initial,
-        int expiration,
+        time_t expiration,
         long value
     );
 }
