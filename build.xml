@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jna-libmemcached" default="usage" basedir=".">
+  
+  <property environment="env" />
+  
+  <property name="source.dir" value="${basedir}/src" />
+  <property name="test.source.dir" value="${basedir}/test" />
+  <property name="build.dir" value="${basedir}/build" />
+  <property name="dist.dir" value="${basedir}/dist" />
+  <property name="library.dir" value="${basedir}/lib" />
+  
+  <property name="build.complete" value="false" />
+  
+  <property name="jna.libmemcached.name" value="libmemcached" />
+  <property name="jna.libmemcached.version" value="0.01" />
+  <property name="jna.libmemcached.package.zip" value="${jna.libmemcached.name}-${jna.libmemcached.version}.zip" />
+  <property name="jna.libmemcached.package.dependencies.zip" value="${jna.libmemcached.name}-${jna.libmemcached.version}-with-dependencies.zip" />
+  <property name="jna.libmemcached.jar" value="${jna.libmemcached.name}-${jna.libmemcached.version}.jar" />
+  <property name="jna.libmemcached.jar.sources" value="${jna.libmemcached.name}-${jna.libmemcached.version}-sources.jar" />
+  
+  <target name="usage" description="--> usage">
+    <echo message="" />
+    <echo message="-----------------------------------                  " />
+    <echo message="${ant.project.name} usage:                           " />
+    <echo message="package => create package                            " />
+    <echo message="package-with-dependencies => create package          " />
+    <echo message="-----------------------------------                  " />
+    <echo message="" />
+  </target>
+  
+  <path id="jna-libraries">
+    <fileset dir="${library.dir}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+  
+  <target name="prepare">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${dist.dir}"/>
+  </target>
+
+  <target name="cleanup" depends="prepare">
+    <delete dir="${build.dir}" includes="**/**" />
+    <delete dir="${dist.dir}" includes="**/**" />
+  </target>
+  
+  <target name="-compile" depends="prepare" unless="${build.complete}">
+    <javac destdir="${build.dir}" srcdir="${source.dir}" debug="off">
+      <classpath refid="jna-libraries" />
+    </javac>
+    <property name="build.complete" value="true" />
+  </target>
+  
+  <target name="-jar" depends="-compile">
+    <jar destfile="${dist.dir}/${jna.libmemcached.jar}">
+      <fileset dir="${build.dir}" includes="**/*.class" />
+    </jar>
+  </target>
+  
+  <target name="-jar-sources" depends="-compile">
+    <jar destfile="${dist.dir}/${jna.libmemcached.jar.sources}">
+      <fileset dir="${source.dir}" includes="**/*.java" />
+    </jar>
+  </target>
+    
+  <target name="jars" depends="-jar-sources, -jar" />
+  
+  <target name="package" depends="cleanup, jars">
+    <zip destfile="${dist.dir}/${jna.libmemcached.package.zip}">
+      <fileset dir="${dist.dir}" includes="${jna.libmemcached.jar}" />
+      <fileset dir="${dist.dir}" includes="${jna.libmemcached.jar.sources}" />
+      <fileset dir="${basedir}" includes="README" />
+      <fileset dir="${basedir}" includes="LICENSE" />
+    </zip>
+  </target>
+  
+  <target name="package-with-dependencies" depends="cleanup, jars">
+    <zip destfile="${dist.dir}/${jna.libmemcached.package.dependencies.zip}">
+      <zipfileset dir="${library.dir}" includes="**/**" prefix="lib" />
+      <fileset dir="${dist.dir}" includes="${jna.libmemcached.jar}" />
+      <fileset dir="${dist.dir}" includes="${jna.libmemcached.jar.sources}" />
+      <fileset dir="${basedir}" includes="README" />
+      <fileset dir="${basedir}" includes="LICENSE" />
+    </zip>
+  </target>
+</project>
