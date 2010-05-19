@@ -1,78 +1,76 @@
 jna-libmemcached
 ----
 
-libmemcached for JNA
+libmemcached(libmemcched-0.40) for JNA
 
 
 example
 ----
 
-C-lang like:
-----
-
-public class Example {
-    public static void main(String...args){
-        memcached memcached = LibMemcached.memcached;
+C-lang style(use libmemcached proxy):
+========
+    
+    memcached memcached = LibMemcached.memcached;
+            
+    System.out.println(memcached.memcached_lib_version());
+    memcached_st mmc = memcached.memcached_create(null);
+    
+    memcached.memcached_server_add(mmc, "localhost", 11211);
+    {
+        String key = "hoge";
+        size_t keylen = new size_t(key.length());
+        String value = "1234";
+        size_t valuelen = new size_t(value.length());
+        time_t expiration = new time_t(10);
         
-        System.out.println(memcached.memcached_lib_version());
-        memcached_st mmc = memcached.memcached_create(null);
-        
-        memcached.memcached_server_add(mmc, "localhost", 11211);
-        {
-            String key = "hoge";
-            NativeLong keylen = new NativeLong(key.length());
-            String value = "1234";
-            NativeLong valuelen = new NativeLong(value.length());
-            
-            int rc = memcached.memcached_set(mmc, key, keylen, value, valuelen, 10, 0);
-            if (memcached_return.MEMCACHED_SUCCESS != rc && memcached_return.MEMCACHED_BUFFERED != rc) {
-                memcached.memcached_free(mmc);
-                throw new LibMemcachedRuntimeException(memcached.memcached_strerror(mmc, rc));
-            }
-            if(memcached_return.MEMCACHED_SUCCESS == rc){
-                System.out.println("set success!");
-            }
-            
-            String getKey = "hoge";
-            NativeLong getKeyLength = new NativeLong(key.length());
-            NativeLongByReference returnValueLength = new NativeLongByReference();
-            IntByReference returnFlags = new IntByReference();
-            IntByReference returnError = new IntByReference();
-            String result = memcached.memcached_get(mmc, getKey, getKeyLength, returnValueLength, returnFlags, returnError);
-            
-            int error = returnError.getValue();
-            if(memcached_return.MEMCACHED_SUCCESS == error){
-                System.out.println("get success!");
-            }
-            System.out.println("result = " + result + ", length = " + returnValueLength.getValue().longValue() + ", flags = " + returnFlags.getValue() + "");
+        int rc = memcached.memcached_set(mmc, key, keylen, value, valuelen, expiration, 0);
+        if (memcached_return.MEMCACHED_SUCCESS != rc && memcached_return.MEMCACHED_BUFFERED != rc) {
+            memcached.memcached_free(mmc);
+            throw new LibMemcachedRuntimeException(memcached.memcached_strerror(mmc, rc));
         }
-        memcached.memcached_free(mmc);
     }
-}
+    memcached.memcached_free(mmc);
 
-Wrapperd libmemcached:
----
-public class Wrapper {
-    public static void main(String...args){
-        MemcachedClient client = new MemcachedClient();
-        System.out.println(client.libraryVersion());
-        try {
-            client.addServer("localhost", 11211);
-        } catch(LibMemcachedException e){
-            e.printStackTrace();
-        }
-        
-        MemcachedStorage storage = client.getStorage();
-        
-        ReturnType rt = storage.set("hoge", "1234", 10, 0);
-        System.out.println(rt);
-        
-        try {
-            System.out.println(storage.get("hoge"));
-        } catch(LibMemcachedException e){
-            e.printStackTrace();
-        }
-        
+
+Java style(libmemcached wrapper):
+========
+
+    MemcachedClient client = new MemcachedClient();
+    System.out.println(client.libraryVersion());
+    ReturnType err = client.addServer("localhost", 11211);
+    System.out.println(err);
+    
+    MemcachedStorage storage = client.getStorage();
+    ReturnType rt = storage.set("hoge", "1234", 10, 0);
+    System.out.println(rt);
+    
+    try {
+        System.out.println(storage.get("hoge"));
+    } catch(LibMemcachedException e){
+        e.printStackTrace();
     }
 
-}
+Functions (use static import):
+========
+
+    import static libmemcached.wrapper.function.Memcached.memcached_create;
+    import static libmemcached.wrapper.function.Memcached.memcached_free;
+    import static libmemcached.wrapper.function.Server.memcached_server_add;
+    import static libmemcached.wrapper.function.Storage.memcached_set;
+    import static libmemcached.wrapper.function.Get.memcached_get;
+
+    memcached_st mmc = memcached_create();
+    try {
+        memcached_server_add(mmc, "localhost", 11211);
+        
+        memcached_set(mmc, "hello", "world", 10, 0);
+        
+        try {
+            SimpleResult result = memcached_get(mmc, "hello");
+            System.out.println("value = " + result.getValue() + ", flags = " + result.getFlags());
+        } catch (LibMemcachedException e) {
+            e.printStackTrace();
+        }
+    } finally {
+        memcached_free(mmc);
+    }

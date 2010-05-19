@@ -1,18 +1,20 @@
 package libmemcached.wrapper;
 
+import static libmemcached.wrapper.function.Parse.memcached_servers_parse;
+import static libmemcached.wrapper.function.ServerList.memcached_server_list_append;
+import static libmemcached.wrapper.function.ServerList.memcached_server_list_append_with_weight;
+import static libmemcached.wrapper.function.ServerList.memcached_server_list_count;
+import static libmemcached.wrapper.function.ServerList.memcached_server_list_free;
+import static libmemcached.wrapper.function.ServerList.memcached_server_push;
+
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import libmemcached.memcached;
 import libmemcached.exception.LibMemcachedException;
 import libmemcached.types.memcached_server_list_st;
 import libmemcached.wrapper.type.ReturnType;
 
-import com.sun.jna.ptr.IntByReference;
-
 public class MemcachedServerList {
-    
-    protected final memcached handler;
     
     protected final MemcachedClient memcached;
     
@@ -21,7 +23,6 @@ public class MemcachedServerList {
     protected memcached_server_list_st server_st = null;
     
     protected MemcachedServerList(MemcachedClient memcached){
-        this.handler = MemcachedClient.handler;
         this.memcached = memcached;
     }
     
@@ -29,7 +30,7 @@ public class MemcachedServerList {
     protected void finalize() throws Throwable {
         super.finalize();
         if(null != server_st){
-            handler.memcached_server_list_free(server_st);
+            memcached_server_list_free(server_st);
         }
     }
 
@@ -37,13 +38,7 @@ public class MemcachedServerList {
         lock.lock();
         
         try {
-            IntByReference error = new IntByReference();
-            memcached_server_list_st newServerSt = handler.memcached_server_list_append(server_st, hostname, port, error);
-            int rc = error.getValue();
-            if(!ReturnType.SUCCESS.equalValue(rc)){
-                throw new LibMemcachedException(memcached.error(rc));
-            }
-            server_st = newServerSt;
+            server_st = memcached_server_list_append(server_st, hostname, port);
         } finally {
             lock.unlock();
         }
@@ -53,13 +48,7 @@ public class MemcachedServerList {
         lock.lock();
         
         try {
-            IntByReference error = new IntByReference();
-            memcached_server_list_st newServerSt = handler.memcached_server_list_append_with_weight(server_st, hostname, port, weight, error);
-            int rc = error.getValue();
-            if(!ReturnType.SUCCESS.equalValue(rc)){
-                throw new LibMemcachedException(memcached.error(rc));
-            }
-            server_st = newServerSt;
+            server_st = memcached_server_list_append_with_weight(server_st, hostname, port, weight);
         } finally {
             lock.unlock();
         }
@@ -69,7 +58,7 @@ public class MemcachedServerList {
         lock.lock();
         
         try {
-            server_st = handler.memcached_servers_parse(server_strings);
+            server_st = memcached_servers_parse(server_strings);
         } finally {
             lock.unlock();
         }
@@ -79,20 +68,17 @@ public class MemcachedServerList {
         lock.lock();
         
         try {
-            return handler.memcached_server_list_count(server_st);
+            return memcached_server_list_count(server_st);
         } finally {
             lock.unlock();
         }
     }
     
-    public void push() throws LibMemcachedException {
+    public ReturnType push() {
         lock.lock();
         
         try {
-            int rc = handler.memcached_server_push(memcached.memcached_st, server_st);
-            if(!ReturnType.SUCCESS.equalValue(rc)){
-                throw new LibMemcachedException(memcached.error(rc));
-            }
+            return memcached_server_push(memcached.memcached_st, server_st);
         } finally {
             lock.unlock();
         }

@@ -19,7 +19,7 @@ public interface behavior {
      *  const memcached_behavior_t flag
      * )
      */
-    public long memcached_behavior_get(memcached_st ptr, long flag);
+    public long memcached_behavior_get(memcached_st ptr, int flag);
 
     /**
      * C func: memcached_return_t memcached_behavior_set_distribution(

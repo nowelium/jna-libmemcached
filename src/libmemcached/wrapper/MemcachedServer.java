@@ -1,17 +1,20 @@
 package libmemcached.wrapper;
 
-import libmemcached.memcached;
-import libmemcached.exception.LibMemcachedRuntimeException;
+import static libmemcached.wrapper.function.Quit.memcached_quit_server;
+import static libmemcached.wrapper.function.Server.memcached_server_clone;
+import static libmemcached.wrapper.function.Server.memcached_server_error;
+import static libmemcached.wrapper.function.Server.memcached_server_free;
+import static libmemcached.wrapper.function.Server.memcached_server_name;
+import static libmemcached.wrapper.function.Server.memcached_server_port;
+import static libmemcached.wrapper.function.Server.memcached_server_response_count;
 import libmemcached.types.memcached_server_instance_st;
 
 public class MemcachedServer {
     
-    protected final memcached handler;
     protected final MemcachedClient memcached;
     protected final memcached_server_instance_st server_st;
     
     protected MemcachedServer(MemcachedClient memcached, memcached_server_instance_st server_st){
-        this.handler = MemcachedClient.handler;
         this.memcached = memcached;
         this.server_st = server_st;
     }
@@ -19,36 +22,33 @@ public class MemcachedServer {
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        handler.memcached_server_free(server_st);
+        memcached_server_free(server_st);
     }
 
     @Override
     protected MemcachedServer clone() throws CloneNotSupportedException {
-        memcached_server_instance_st new_server_st = handler.memcached_server_clone(null, server_st);
-        if(null == server_st){
-            throw new LibMemcachedRuntimeException("memcached_server_clone() failed");
-        }
+        memcached_server_instance_st new_server_st = memcached_server_clone(null, server_st);
         return new MemcachedServer(memcached, new_server_st);
     }
     
     public int getResponseCount(){
-        return handler.memcached_server_response_count(server_st);
+        return memcached_server_response_count(server_st);
     }
 
     public String getHostName(){
-        return handler.memcached_server_name(server_st);
+        return memcached_server_name(server_st);
     }
     
     public int getPort(){
-        return handler.memcached_server_port(server_st);
+        return memcached_server_port(server_st);
     }
     
     public String getError(){
-        return handler.memcached_server_error(server_st);
+        return memcached_server_error(server_st);
     }
     
     public void quit(boolean io_death){
-        handler.memcached_quit_server(server_st, io_death);
+        memcached_quit_server(server_st, io_death);
     }
     
 }
