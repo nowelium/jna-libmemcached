@@ -1,5 +1,6 @@
 package libmemcached.wrapper;
 
+import static libmemcached.wrapper.function.StrError.memcached_strerror;
 import static libmemcached.wrapper.function.Auto.memcached_decrement;
 import static libmemcached.wrapper.function.Auto.memcached_decrement_with_initial;
 import static libmemcached.wrapper.function.Auto.memcached_increment;
@@ -79,7 +80,10 @@ public class MemcachedStorage {
     public void getMulti(Fetcher fetcher, String...keys) throws LibMemcachedException {
         readLock.lock();
         try {
-            memcached_mget(memcached.memcached_st, keys);
+            ReturnType rt = memcached_mget(memcached.memcached_st, keys);
+            if(!ReturnType.SUCCESS.equals(rt)){
+                throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()));
+            }
             
             fetch(keys.length);
         } finally {
@@ -90,7 +94,10 @@ public class MemcachedStorage {
     public void getMultiByKey(Fetcher fetcher, String masterKey, String...keys) throws LibMemcachedException {
         readLock.lock();
         try {
-            memcached_mget_by_key(memcached.memcached_st, masterKey, keys);
+            ReturnType rt = memcached_mget_by_key(memcached.memcached_st, masterKey, keys);
+            if(!ReturnType.SUCCESS.equals(rt)){
+                throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()));
+            }
             
             fetch(keys.length);
         } finally {
