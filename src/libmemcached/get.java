@@ -5,7 +5,6 @@ import libmemcached.memcached.memcached_st;
 import libmemcached.result.memcached_result_st;
 import libmemcached.types.memcached_execute_function;
 
-import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
@@ -58,7 +57,7 @@ public interface get {
         memcached_st ptr, 
         String master_key, size_t master_key_length, 
         String key, size_t key_length,
-        LongByReference value_length, 
+        IntByReference value_length, 
         IntByReference flags,
         IntByReference error
     );
@@ -88,8 +87,8 @@ public interface get {
      */
     public String memcached_fetch(
         memcached_st ptr, 
-        byte[] key, LongByReference key_length, 
-        LongByReference value_length,
+        byte[] key, IntByReference key_length, 
+        IntByReference value_length,
         IntByReference flags, 
         IntByReference error
     );
@@ -120,9 +119,9 @@ public interface get {
      */
     public int memcached_mget_execute(
         memcached_st ptr,
-        String keys,
-        NativeLong key_length,
-        NativeLong number_of_keys,
+        String[] keys,
+        size_t[] key_length,
+        size_t number_of_keys,
         memcached_execute_function callback,
         Pointer context,
         int number_of_callbacks
@@ -144,10 +143,10 @@ public interface get {
     public int memcached_mget_execute_by_key(
         memcached_st ptr,
         String master_key,
-        NativeLong master_key_length,
-        String keys,
-        NativeLong key_length,
-        NativeLong number_of_keys,
+        size_t master_key_length,
+        String[] keys,
+        size_t[] key_length,
+        size_t number_of_keys,
         memcached_execute_function callback,
         Pointer context,
         int number_of_callbacks

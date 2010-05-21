@@ -31,15 +31,23 @@ public class Get extends Function {
     public static SimpleResult memcached_get_by_key(memcached_st ptr, String master_key, String key) throws LibMemcachedException {
         size_t master_key_length = new size_t(master_key.length());
         size_t key_length = new size_t(key.length());
-        LongByReference value_length = new LongByReference();
+        IntByReference value_length = new IntByReference();
         IntByReference flags = new IntByReference();
         IntByReference error = new IntByReference();
         
-        String value = getMemcached().memcached_get_by_key(ptr, master_key, master_key_length, key, key_length, value_length, flags, error);
+        String result = getMemcached().memcached_get_by_key(
+            ptr,
+            master_key, master_key_length,
+            key, key_length,
+            value_length,
+            flags,
+            error
+        );
         int rc = error.getValue();
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached_strerror(ptr, rc));
         }
+        String value = result.substring(0, value_length.getValue());
         return new SimpleResult(key, value, value_length.getValue(), flags.getValue());
     }
     
@@ -85,14 +93,14 @@ public class Get extends Function {
     }
     
     public static SimpleResult memcached_fetch(memcached_st ptr) throws LibMemcachedException {
-        LongByReference keyLength = new LongByReference();
+        IntByReference key_length = new IntByReference();
         byte[] returnKey = new byte[constants.MEMCACHED_MAX_KEY];
-        LongByReference valueLength = new LongByReference();
+        IntByReference value_length = new IntByReference();
         IntByReference flags = new IntByReference();
         IntByReference error = new IntByReference();
         String result = getMemcached().memcached_fetch(
             ptr,
-            returnKey, keyLength, valueLength,
+            returnKey, key_length, value_length,
             flags, error
         );
 
@@ -103,7 +111,10 @@ public class Get extends Function {
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached_strerror(ptr, rc));
         }
-        return new SimpleResult(new String(returnKey), result, result.length(), flags.getValue());
+        
+        String key = new String(returnKey, 0, key_length.getValue());
+        String value = result.substring(0, value_length.getValue());
+        return new SimpleResult(key, value, value_length.getValue(), flags.getValue());
     }
 
 }
