@@ -90,6 +90,11 @@ public interface server {
             // C type: bool
             public boolean is_shutting_down;
             
+            public options_struct(){
+                super();
+                setAutoSynch(false);
+            }
+            
             public static class ByReference extends options_struct implements Structure.ByReference {
                 
             }
@@ -104,6 +109,11 @@ public interface server {
             // C type: bool
             public boolean is_dead;
             
+            public state_struct(){
+                super();
+                setAutoSynch(false);
+            }
+            
             public static class ByReference extends state_struct implements Structure.ByReference {
                 
             }
@@ -117,6 +127,11 @@ public interface server {
             public int read;
             // C type: uint32_t
             public int write;
+            
+            public io_wait_count_struct(){
+                super();
+                setAutoSynch(false);
+            }
             
             public static class ByReference extends io_wait_count_struct implements Structure.ByReference {
                 

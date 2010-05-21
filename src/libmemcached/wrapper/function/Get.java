@@ -9,15 +9,14 @@ import libmemcached.result.memcached_result_st;
 import libmemcached.wrapper.SimpleResult;
 import libmemcached.wrapper.type.ReturnType;
 
-import com.sun.jna.NativeLong;
 import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.ptr.NativeLongByReference;
+import com.sun.jna.ptr.LongByReference;
 
 public class Get extends Function {
     
     public static SimpleResult memcached_get(memcached_st ptr, String key) throws LibMemcachedException {
         size_t key_length = new size_t(key.length());
-        NativeLongByReference value_length = new NativeLongByReference();
+        LongByReference value_length = new LongByReference();
         IntByReference flags = new IntByReference();
         IntByReference error = new IntByReference();
         
@@ -26,13 +25,13 @@ public class Get extends Function {
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached_strerror(ptr, rc));
         }
-        return new SimpleResult(key, value, value_length.getValue().longValue(), flags.getValue());
+        return new SimpleResult(key, value, value_length.getValue(), flags.getValue());
     }
     
     public static SimpleResult memcached_get_by_key(memcached_st ptr, String master_key, String key) throws LibMemcachedException {
         size_t master_key_length = new size_t(master_key.length());
         size_t key_length = new size_t(key.length());
-        NativeLongByReference value_length = new NativeLongByReference();
+        LongByReference value_length = new LongByReference();
         IntByReference flags = new IntByReference();
         IntByReference error = new IntByReference();
         
@@ -41,51 +40,54 @@ public class Get extends Function {
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached_strerror(ptr, rc));
         }
-        return new SimpleResult(key, value, value_length.getValue().longValue(), flags.getValue());
+        return new SimpleResult(key, value, value_length.getValue(), flags.getValue());
     }
     
     public static ReturnType memcached_mget(memcached_st ptr, String...keys){
-        int key_length = 0;
-        for(String key: keys){
-            key_length += key.length();
+        size_t[] size = new size_t[keys.length];
+        for(int i = 0; i < keys.length; ++i){
+            size[i] = new size_t(keys[i].length());
         }
         
-        NativeLongByReference length = new NativeLongByReference(new NativeLong(key_length));
-        int rc = getMemcached().memcached_mget(ptr, keys, length, keys.length);
+        size_t keys_length = new size_t(keys.length);
+        int rc = getMemcached().memcached_mget(ptr, keys, size, keys_length);
         return ReturnType.get(rc);
     }
     
     public static ReturnType memcached_mget_by_key(memcached_st ptr, String master_key, String...keys){
-        long key_length = 0;
-        for(String key: keys){
-            key_length += key.length();
+        size_t[] size = new size_t[keys.length];
+        for(int i = 0; i < keys.length; ++i){
+            size[i] = new size_t(keys[i].length());
         }
         
         size_t master_key_kength = new size_t(master_key.length());
-        NativeLongByReference length = new NativeLongByReference(new NativeLong(key_length));
-        int rc = getMemcached().memcached_mget_by_key(ptr, master_key, master_key_kength, keys, length, keys.length);
+        size_t keys_length = new size_t(keys.length);
+        int rc = getMemcached().memcached_mget_by_key(ptr, master_key, master_key_kength, keys, size, keys_length);
         return ReturnType.get(rc);
     }
     
     public static memcached_result_st memcached_fetch_result(memcached_st ptr) throws LibMemcachedException {
         return memcached_fetch_result(ptr, null);
-        
     }
     
     public static memcached_result_st memcached_fetch_result(memcached_st ptr, memcached_result_st result_st) throws LibMemcachedException {
         IntByReference error = new IntByReference();
         memcached_result_st result = getMemcached().memcached_fetch_result(ptr, result_st, error);
         int rc = error.getValue();
+        if(ReturnType.END.equalValue(rc)){
+            return null;
+        }
+        
         if(!ReturnType.SUCCESS.equalValue(rc)){
-            throw new LibMemcachedException(memcached_strerror(ptr, rc));
+            throw new LibMemcachedException(memcached_strerror(ptr, rc), rc);
         }
         return result;
     }
     
     public static SimpleResult memcached_fetch(memcached_st ptr) throws LibMemcachedException {
-        NativeLongByReference keyLength = new NativeLongByReference();
+        LongByReference keyLength = new LongByReference();
         byte[] returnKey = new byte[constants.MEMCACHED_MAX_KEY];
-        NativeLongByReference valueLength = new NativeLongByReference();
+        LongByReference valueLength = new LongByReference();
         IntByReference flags = new IntByReference();
         IntByReference error = new IntByReference();
         String result = getMemcached().memcached_fetch(
@@ -95,6 +97,9 @@ public class Get extends Function {
         );
 
         int rc = error.getValue();
+        if(ReturnType.END.equalValue(rc)){
+            return null;
+        }
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached_strerror(ptr, rc));
         }

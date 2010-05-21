@@ -8,7 +8,7 @@ import libmemcached.types.memcached_execute_function;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
-import com.sun.jna.ptr.NativeLongByReference;
+import com.sun.jna.ptr.LongByReference;
 
 public interface get {
     
@@ -24,7 +24,7 @@ public interface get {
     public String memcached_get(
         memcached_st ptr, 
         String key, size_t key_length,
-        NativeLongByReference value_length, 
+        LongByReference value_length, 
         IntByReference flags,
         IntByReference error
     );
@@ -32,14 +32,16 @@ public interface get {
     /**
      * C func: memcached_return memcached_mget(
      *  memcached_st *ptr,
-     *  char **keys, size_t *key_length,
-     *  unsigned int number_of_keys
+     *  const char * const *keys,
+     *  size_t *key_length,
+     *  size_t number_of_keys
      * );
      */
     public int memcached_mget(
         memcached_st ptr, 
-        String[] keys, NativeLongByReference key_length, 
-        int number_of_keys
+        String[] keys,
+        size_t[] key_length, 
+        size_t number_of_keys
     );
 
     /**
@@ -56,7 +58,7 @@ public interface get {
         memcached_st ptr, 
         String master_key, size_t master_key_length, 
         String key, size_t key_length,
-        NativeLongByReference value_length, 
+        LongByReference value_length, 
         IntByReference flags,
         IntByReference error
     );
@@ -72,8 +74,8 @@ public interface get {
     public int memcached_mget_by_key(
         memcached_st ptr,
         String master_key, size_t master_key_length,
-        String[] keys, NativeLongByReference key_length, 
-        int number_of_keys
+        String[] keys, size_t[] key_length, 
+        size_t number_of_keys
     );
 
     /**
@@ -86,8 +88,8 @@ public interface get {
      */
     public String memcached_fetch(
         memcached_st ptr, 
-        byte[] key, NativeLongByReference key_length, 
-        NativeLongByReference value_length,
+        byte[] key, LongByReference key_length, 
+        LongByReference value_length,
         IntByReference flags, 
         IntByReference error
     );

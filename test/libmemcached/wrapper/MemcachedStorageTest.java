@@ -1,7 +1,6 @@
 package libmemcached.wrapper;
 
 import libmemcached.exception.LibMemcachedException;
-import libmemcached.wrapper.function.Get;
 import libmemcached.wrapper.type.ReturnType;
 
 import org.junit.Assert;
@@ -27,9 +26,6 @@ public class MemcachedStorageTest {
         Assert.assertEquals(storage.set("key-4", "value-4", expiration, flags), ReturnType.SUCCESS);
         Assert.assertEquals(storage.set("key-5", "value-5", expiration, flags), ReturnType.SUCCESS);
         
-        System.out.println(Get.memcached_mget(client.memcached_st, "key-1"));
-        
-        /*
         try {
             storage.getMulti(new MemcachedStorage.Fetcher() {
                 public void fetch(SimpleResult result) {
@@ -39,7 +35,6 @@ public class MemcachedStorageTest {
         } catch(LibMemcachedException e){
             e.printStackTrace();
         }
-        */
     }
 
 }

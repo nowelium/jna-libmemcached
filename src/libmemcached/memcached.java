@@ -137,6 +137,11 @@ public interface memcached extends
             // C type: bool
             public boolean is_time_for_rebuild;
             
+            public state_struct(){
+                super();
+                setAutoSynch(false);
+            }
+            
             public static class ByReference extends state_struct implements Structure.ByReference {
                 
             }
@@ -180,6 +185,11 @@ public interface memcached extends
             // C type: bool
             public boolean tcp_keepalive;
             
+            public flags_struct(){
+                super();
+                setAutoSynch(false);
+            }
+            
             public static class ByReference extends flags_struct implements Structure.ByReference {
                 
             }
@@ -200,6 +210,11 @@ public interface memcached extends
             // C type: void*
             public Pointer context;
             
+            public allocators_struct(){
+                super();
+                setAutoSynch(false);
+            }
+            
             public static class ByReference extends allocators_struct implements Structure.ByReference {
                 
             }
@@ -210,6 +225,11 @@ public interface memcached extends
         public static class options_struct extends Structure {
             // C type: bool
             public boolean is_allocated;
+            
+            public options_struct(){
+                super();
+                setAutoSynch(false);
+            }
             
             public static class ByReference extends options_struct implements Structure.ByReference {
                 
@@ -225,6 +245,11 @@ public interface memcached extends
         public int index;
         // C type: uint32_t
         public int value;
+        
+        public memcached_continuum_item_st(){
+            super();
+            setAutoSynch(false);
+        }
         
         public static class ByReference extends memcached_continuum_item_st implements Structure.ByReference {
             

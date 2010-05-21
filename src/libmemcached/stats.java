@@ -59,6 +59,11 @@ public interface stats {
         // C type: memcached_st*
         public memcached_st.ByReference root;
         
+        public memcached_stat_st(){
+            super();
+            setAutoSynch(false);
+        }
+        
         public static class ByReference extends memcached_stat_st implements Structure.ByReference {
 
         }
