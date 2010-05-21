@@ -85,7 +85,7 @@ public class MemcachedStorage {
                 throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()));
             }
             
-            fetch(keys.length);
+            fetch(fetcher);
         } finally {
             readLock.unlock();
         }
@@ -99,14 +99,14 @@ public class MemcachedStorage {
                 throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()));
             }
             
-            fetch(keys.length);
+            fetch(fetcher);
         } finally {
             readLock.unlock();
         }
     }
     
-    public SimpleResult fetchResult(int length) throws LibMemcachedException {
-        return memcached_fetch(memcached.memcached_st, length);
+    public SimpleResult fetch() throws LibMemcachedException {
+        return memcached_fetch(memcached.memcached_st);
     }
     
     public MemcachedResult fetchResult() throws LibMemcachedException {
@@ -117,15 +117,15 @@ public class MemcachedStorage {
         return memcached.createResult(memcached_fetch_result(memcached.memcached_st, result.result_st));
     }
     
-    public String fetch(int length) throws LibMemcachedException {
-        SimpleResult result = fetchResult(length);
+    public String fetchString() throws LibMemcachedException {
+        SimpleResult result = fetch();
         return result.getValue();
     }
     
-    public void fetch(int length, Fetcher fetcher) throws LibMemcachedException {
+    public void fetch(Fetcher fetcher) throws LibMemcachedException {
         SimpleResult result = null;
         do {
-            result = memcached_fetch(memcached.memcached_st, length);
+            result = memcached_fetch(memcached.memcached_st);
             if(result == null){
                 break;
             }
