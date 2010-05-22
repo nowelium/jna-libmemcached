@@ -1,0 +1,36 @@
+libmemcached for JNA(Java Native Access)
+
+
+License
+-------
+  
+BSD
+
+
+---------
+Documents
+---------
+
+Javadoc:
+  `javadoc <javadoc/index.html>`_
+        
+Examples:
+  Basics:
+    * `create/destroy <examples_basics_instance.html>`_
+    * `set/get <examples_basics_set_get.html>`_
+      
+  Get:
+    * `get <examples_get_get.html>`_
+    * `mget <examples_get_mget.html>`_
+
+Download
+--------
+
+You can download this project in either zip or tar formats.
+ 
+  * zip: http://github.com/nowelium/jna-libmemcached/zipball/master
+  * tar: http://github.com/nowelium/jna-libmemcached/tarball/master
+    
+You can also clone the project with Git by running::
+
+  $ git clone git://github.com/nowelium/jna-libmemcached

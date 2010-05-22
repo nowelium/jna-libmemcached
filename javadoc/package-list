@@ -1,0 +1,6 @@
+libmemcached
+libmemcached.exception
+libmemcached.util
+libmemcached.wrapper
+libmemcached.wrapper.function
+libmemcached.wrapper.type

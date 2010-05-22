@@ -1,0 +1,47 @@
+%(head_prefix)s                                                                                                                                                                                                  
+%(head)s
+%(stylesheet)s
+
+<style type="text/css">
+@charset "utf-8";
+body { background-color: #fff; font-family: "Helvetica,Arial,FreeSans"; color: #000;}
+#container { margin: 0 auto; width: 700px; }
+h1 { text-align:left; font-size: 2em; color: #333; margin-bottom: 3px; }
+h1 .small { font-size: 0.4em; }
+h1 a { text-decoration: none; }
+h2 { font-size: 1.5em; color: #333; }
+h3 { text-align: center; color: #333; }
+a { color: #333; }
+.description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic; }
+.download { float: right; }
+.footer { text-align:center; padding-top:30px; font-style: italic; }
+
+pre {
+  color: #000;  background-color: #ececec; border: 1px solid #999;
+  overflow: auto; clear: both; display: block;
+  font-family: "Monaco, monospace, Courier";
+  margin-bottom: 1em; margin-top: 1em; max-height: 500px;
+  padding: 15px; white-space: pre;
+}
+dl {
+  padding-left: 1em;
+}
+dt {
+  margin-top: 1em;
+}
+hr { border: 0; border-bottom: 1px solid #aaa; }
+</style>
+
+%(body_prefix)s
+
+<div id="container">
+  <h1><a href="index.html">lib-memcached</a></h1>
+
+  %(body_pre_docinfo)s
+  %(docinfo)s
+
+  %(body)s
+
+</div>
+
+%(body_suffix)s
