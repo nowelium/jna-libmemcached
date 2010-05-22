@@ -8,6 +8,7 @@
   <property name="build.dir" value="${basedir}/build" />
   <property name="dist.dir" value="${basedir}/dist" />
   <property name="library.dir" value="${basedir}/lib" />
+  <property name="doc.javadoc.dir" value="${basedir}/doc/javadoc" />
   
   <property name="build.complete" value="false" />
   
@@ -24,6 +25,7 @@
     <echo message="${ant.project.name} usage:                           " />
     <echo message="package => create package                            " />
     <echo message="package-with-dependencies => create package          " />
+    <echo message="javadoc                                              " />
     <echo message="-----------------------------------                  " />
     <echo message="" />
   </target>
@@ -82,5 +84,18 @@
       <fileset dir="${basedir}" includes="README" />
       <fileset dir="${basedir}" includes="LICENSE" />
     </zip>
+  </target>
+  
+  <target name="javadoc">
+    <javadoc
+      access="public"
+      author="true"
+      destdir="${doc.javadoc.dir}"
+      nodeprecated="false" nodeprecatedlist="false" noindex="false"
+      notree="false" charset="utf-8" locale="en_US">
+      <doctitle>${jna.libmemcached.name} - ${jna.libmemcached.version}</doctitle>
+      <classpath refid="jna-libraries" />
+      <sourcepath path="${source.dir}" />
+    </javadoc>
   </target>
 </project>
