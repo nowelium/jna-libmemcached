@@ -8,7 +8,9 @@
   <property name="build.dir" value="${basedir}/build" />
   <property name="dist.dir" value="${basedir}/dist" />
   <property name="library.dir" value="${basedir}/lib" />
+  <property name="doc.dir" value="${basedir}/doc" />
   <property name="doc.javadoc.dir" value="${basedir}/doc/javadoc" />
+  <property name="doc.web.url" value="http://nowelium.github.com/jna-libmemcached" />
   
   <property name="build.complete" value="false" />
   
@@ -19,12 +21,26 @@
   <property name="jna.libmemcached.jar" value="${jna.libmemcached.name}-${jna.libmemcached.version}.jar" />
   <property name="jna.libmemcached.jar.sources" value="${jna.libmemcached.name}-${jna.libmemcached.version}-sources.jar" />
   
+  <macrodef name="rst2html">
+    <attribute name="srcfile" />
+    <attribute name="destfile" />
+    <sequential>
+      <exec executable="python">
+        <arg line="${doc.dir}/rst2html.py -s -d -t
+          --template=${doc.dir}/_template.txt --stylesheet-path=${doc.dir}/_stylesheet.css --embed-stylesheet
+          @{srcfile} @{destfile}
+        "/>
+      </exec>
+    </sequential>
+  </macrodef>
+  
   <target name="usage" description="--> usage">
     <echo message="" />
     <echo message="-----------------------------------                  " />
     <echo message="${ant.project.name} usage:                           " />
     <echo message="package => create package                            " />
     <echo message="package-with-dependencies => create package          " />
+    <echo message="doc                                                  " />
     <echo message="javadoc                                              " />
     <echo message="-----------------------------------                  " />
     <echo message="" />
@@ -86,6 +102,11 @@
     </zip>
   </target>
   
+  <target name="doc">
+    <rst2html srcfile="${doc.dir}/index" destfile="${doc.dir}/index.html" />
+    <rst2html srcfile="${doc.dir}/examples_basics_set_get" destfile="${doc.dir}/examples_basics_set_get.html" />
+  </target>
+    
   <target name="javadoc">
     <javadoc
       access="public"
