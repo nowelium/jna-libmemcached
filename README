@@ -1,14 +1,24 @@
 jna-libmemcached
 ----
 
-libmemcached(libmemcched-0.40) for JNA
+  libmemcached(libmemcched-0.40) for JNA
+
+  libmemcacehd:
+    http://libmemcached.org/
+
+  JNA:
+    http://jna.dev.java.net/
+
+documents:
+----
+  see  http://wiki.github.com/nowelium/jna-libmemcached/
 
 
 example
 ----
 
-C-lang style(use libmemcached proxy):
-========
+  C-lang style(use libmemcached proxy):
+  ========
     
     memcached memcached = LibMemcached.memcached;
             
@@ -32,8 +42,8 @@ C-lang style(use libmemcached proxy):
     memcached.memcached_free(mmc);
 
 
-Java style(libmemcached wrapper):
-========
+  Java style(libmemcached wrapper):
+  ========
 
     MemcachedClient client = new MemcachedClient();
     System.out.println(client.libraryVersion());
@@ -50,8 +60,8 @@ Java style(libmemcached wrapper):
         e.printStackTrace();
     }
 
-Functions (use static import):
-========
+  Functions (use static import):
+  ========
 
     import static libmemcached.wrapper.function.Memcached.memcached_create;
     import static libmemcached.wrapper.function.Memcached.memcached_free;
@@ -74,3 +84,6 @@ Functions (use static import):
     } finally {
         memcached_free(mmc);
     }
+
+
+
