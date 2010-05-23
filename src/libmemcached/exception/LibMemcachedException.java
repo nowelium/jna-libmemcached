@@ -1,22 +1,24 @@
 package libmemcached.exception;
 
+import libmemcached.wrapper.type.ReturnType;
+
 public class LibMemcachedException extends Exception {
 
     private static final long serialVersionUID = 1L;
     
-    private int code = -1;
+    private ReturnType rt;
     
     public LibMemcachedException(String message){
-        this(message, 0);
+        this(message, null);
     }
     
-    public LibMemcachedException(String message, int code){
+    public LibMemcachedException(String message, ReturnType rt){
         super(message);
-        this.code = code;
+        this.rt = rt;
     }
     
-    public int getCode(){
-        return code;
+    public ReturnType getReturnType(){
+        return rt;
     }
 
 }

@@ -22,8 +22,11 @@ public class Get extends Function {
         
         String value = getMemcached().memcached_get(ptr, key, key_length, value_length, flags, error);
         int rc = error.getValue();
+        if(ReturnType.NOTFOUND.equalValue(rc)){
+            return null;
+        }
         if(!ReturnType.SUCCESS.equalValue(rc)){
-            throw new LibMemcachedException(memcached_strerror(ptr, rc));
+            throw new LibMemcachedException(memcached_strerror(ptr, rc), ReturnType.get(rc));
         }
         return new SimpleResult(key, value, value_length.getValue(), flags.getValue());
     }
@@ -87,7 +90,7 @@ public class Get extends Function {
         }
         
         if(!ReturnType.SUCCESS.equalValue(rc)){
-            throw new LibMemcachedException(memcached_strerror(ptr, rc), rc);
+            throw new LibMemcachedException(memcached_strerror(ptr, rc), ReturnType.get(rc));
         }
         return result;
     }

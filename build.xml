@@ -23,12 +23,12 @@
   
   <macrodef name="rst2html">
     <attribute name="srcfile" />
-    <attribute name="destfile" />
+    <!-- <attribute name="destfile" /> -->
     <sequential>
       <exec executable="python">
         <arg line="${doc.dir}/rst2html.py -s -d -t
           --template=${doc.dir}/_template.txt --stylesheet-path=${doc.dir}/_stylesheet.css --embed-stylesheet
-          @{srcfile} @{destfile}
+          @{srcfile} @{srcfile}.html
         "/>
       </exec>
     </sequential>
@@ -103,8 +103,11 @@
   </target>
   
   <target name="doc">
-    <rst2html srcfile="${doc.dir}/index" destfile="${doc.dir}/index.html" />
-    <rst2html srcfile="${doc.dir}/examples_basics_set_get" destfile="${doc.dir}/examples_basics_set_get.html" />
+    <rst2html srcfile="${doc.dir}/index" />
+    <rst2html srcfile="${doc.dir}/examples_basics_instance" />
+    <rst2html srcfile="${doc.dir}/examples_basics_set_get" />
+    <rst2html srcfile="${doc.dir}/examples_get_get" />
+    <rst2html srcfile="${doc.dir}/examples_get_mget" />
   </target>
     
   <target name="javadoc">
