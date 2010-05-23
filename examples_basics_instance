@@ -1,1 +1,33 @@
-function:
+Basics Instance
+---------------
+
+C-style::
+
+    // create
+    memcached_st mmc = memcached.memcached_create(null);
+    
+    //
+    // anyware
+    //
+    
+    // destroy
+    memcached.memcached_free(mmc);
+
+class::
+
+    MemcachedClient client = new MemcachedClient();
+    
+    //
+    // anyware
+    //
+
+function::
+
+    memcached_st mmc = memcached_create();
+    try {
+        //
+        // anyware
+        //
+    } finally {
+        memcached_free(mmc);
+    }

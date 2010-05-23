@@ -1,0 +1,58 @@
+Get mget
+--------
+
+class::
+
+    MemcachedClient client = new MemcachedClient();
+    client.addServer("localhost", 11211);
+        
+    int expiration = 10;
+    int flags = 0;
+    MemcachedStorage storage = client.getStorage();
+    storage.set("key-1", "value-1", expiration, flags);
+    storage.set("key-2", "value-2", expiration, flags);
+    storage.set("key-3", "value-3", expiration, flags);
+    storage.set("key-4", "value-4", expiration, flags);
+    storage.set("key-5", "value-5", expiration, flags);
+        
+    storage.getMulti(new MemcachedStorage.Fetcher() {
+        public void fetch(SimpleResult result) {
+            System.out.println(result);
+        }
+    }, "key-1", "key-2", "key-3", "key-4", "key-5");
+
+funciton::
+
+    memcached_st mmc = Memcached.memcached_create();
+    try {
+        memcached_server_list_st servers = null;
+        try {
+            servers = ServerList.memcached_server_list_append(servers, "localhost", 11211);
+            ServerList.memcached_server_push(mmc, servers);
+            
+            Storage.memcached_set(mmc, "key-1", "value-1", 10, 0);
+            Storage.memcached_set(mmc, "key-2", "value-2", 10, 0);
+            
+            Get.memcached_mget(mmc, "key-1", "key-2");
+            memcached_result_st result = Get.memcached_fetch_result(mmc);
+            
+            System.out.println("key-1=" + Result.memcached_result_key_value(result));
+            System.out.println("value-1=" + Result.memcached_result_value(result));
+            
+            Result.memcached_result_free(result);
+            result = Get.memcached_fetch_result(mmc);
+            
+            System.out.println("key-2=" + Result.memcached_result_key_value(result));
+            System.out.println("value-2=" + Result.memcached_result_value(result));
+            
+            Result.memcached_result_free(result);
+            
+            :
+            :
+            :
+        } finally {
+            ServerList.memcached_server_list_free(servers);
+        }
+    } finally {
+        Memcached.memcached_free(mmc);
+    }

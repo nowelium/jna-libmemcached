@@ -1,0 +1,33 @@
+Get get
+--------
+
+class::
+
+    MemcachedClient client = new MemcachedClient();
+    client.addServer("localhost", 11211);
+        
+    MemcachedStorage storage = client.getStorage();
+    ReturnType error = storage.set("key-1", "value-1", 10, 0);
+    
+    SimpleResult result = storage.getResult("key-1");
+    System.out.println("value = " + result.getValue() + ", flags = " + result.getFlags());
+
+function::
+
+    memcached_st mmc = Memcached.memcached_create();
+    try {
+        memcached_server_list_st servers = null;
+        try {
+            servers = ServerList.memcached_server_list_append(servers, "localhost", 11211);
+            ServerList.memcached_server_push(mmc, servers);
+
+            Storage.memcached_set(mmc, "key-1", "value-1", 10, 0);
+            
+            SimpleResult result = Get.memcached_get(mmc, "key-1");
+            System.out.println("value = " + result.getValue() + ", flags = " + result.getFlags());
+        } finally {
+            ServerList.memcached_server_list_free(servers);
+        }
+    } finally {
+        Memcached.memcached_free(mmc);
+    }
