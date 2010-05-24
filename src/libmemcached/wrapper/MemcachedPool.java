@@ -17,15 +17,18 @@ public class MemcachedPool {
     
     protected final memcached_pool_st pool_st;
     
+    @SuppressWarnings("unused")
+    private final Object finalizer = new Object(){
+        @Override
+        protected void finalize() throws Throwable {
+            super.finalize();
+            memcached_pool_destroy(pool_st);
+        }
+    };
+    
     protected MemcachedPool(MemcachedClient memcached, memcached_pool_st pool_st){
         this.memcached = memcached;
         this.pool_st = pool_st;
-    }
-    
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        memcached_pool_destroy(pool_st);
     }
     
     public MemcachedClient pop(boolean block) throws LibMemcachedException {

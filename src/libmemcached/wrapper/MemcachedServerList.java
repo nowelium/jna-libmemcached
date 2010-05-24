@@ -21,19 +21,22 @@ public class MemcachedServerList {
     protected final Lock lock = new ReentrantLock();
     
     protected memcached_server_list_st server_st = null;
+
+    @SuppressWarnings("unused")
+    private final Object finalizer = new Object(){
+        @Override
+        protected void finalize() throws Throwable {
+            super.finalize();
+            if(null != server_st){
+                memcached_server_list_free(server_st);
+            }
+        }
+    };
     
     protected MemcachedServerList(MemcachedClient memcached){
         this.memcached = memcached;
     }
     
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        if(null != server_st){
-            memcached_server_list_free(server_st);
-        }
-    }
-
     public void append(String hostname, int port) throws LibMemcachedException {
         lock.lock();
         

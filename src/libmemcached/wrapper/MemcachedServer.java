@@ -12,19 +12,23 @@ import libmemcached.types.memcached_server_instance_st;
 public class MemcachedServer {
     
     protected final MemcachedClient memcached;
+
     protected final memcached_server_instance_st server_st;
+    
+    @SuppressWarnings("unused")
+    private final Object finalizer = new Object(){
+        @Override
+        protected void finalize() throws Throwable {
+            super.finalize();
+            memcached_server_free(server_st);
+        }
+    };
     
     protected MemcachedServer(MemcachedClient memcached, memcached_server_instance_st server_st){
         this.memcached = memcached;
         this.server_st = server_st;
     }
     
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        memcached_server_free(server_st);
-    }
-
     @Override
     protected MemcachedServer clone() throws CloneNotSupportedException {
         memcached_server_instance_st new_server_st = memcached_server_clone(null, server_st);

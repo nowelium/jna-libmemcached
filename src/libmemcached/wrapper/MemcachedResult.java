@@ -20,17 +20,20 @@ public class MemcachedResult {
     
     protected final memcached_result_st result_st;
     
+    @SuppressWarnings("unused")
+    private final Object finalizer = new Object(){
+        @Override
+        protected void finalize() throws Throwable {
+            super.finalize();
+            memcached_result_free(result_st);
+        }
+    };
+    
     protected MemcachedResult(MemcachedClient memcached, memcached_result_st result_st){
         this.memcached = memcached;
         this.result_st = result_st;
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        memcached_result_free(result_st);
-    }
-    
     public String getKey(){
         return memcached_result_key_value(result_st);
     }

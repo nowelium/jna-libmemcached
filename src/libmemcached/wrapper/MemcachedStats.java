@@ -13,16 +13,19 @@ public class MemcachedStats {
     protected final MemcachedClient memcached;
     
     protected final memcached_stat_st stat_st;
+
+    @SuppressWarnings("unused")
+    private final Object finalizer = new Object(){
+        @Override
+        protected void finalize() throws Throwable {
+            super.finalize();
+            memcached_stat_free(memcached.memcached_st, stat_st);
+        }
+    };
     
     protected MemcachedStats(MemcachedClient memcached, memcached_stat_st stat_st) {
         this.memcached = memcached;
         this.stat_st = stat_st;
-    }
-    
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-        memcached_stat_free(memcached.memcached_st, stat_st);
     }
     
     public ReturnType serverName(String args, String hostname, int port){
