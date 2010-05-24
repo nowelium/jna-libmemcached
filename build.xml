@@ -63,7 +63,7 @@
   </target>
   
   <target name="-compile" depends="prepare" unless="${build.complete}">
-    <javac destdir="${build.dir}" srcdir="${source.dir}" debug="off">
+    <javac destdir="${build.dir}" srcdir="${source.dir}" debug="true" target="1.5">
       <classpath refid="jna-libraries" />
     </javac>
     <property name="build.complete" value="true" />

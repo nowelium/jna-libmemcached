@@ -61,6 +61,9 @@ public class MemcachedStorage {
     
     public String get(String key) throws LibMemcachedException {
         SimpleResult result = getResult(key);
+        if(null == result){
+            return null;
+        }
         return result.getValue();
     }
     
