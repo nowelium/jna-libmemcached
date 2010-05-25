@@ -3,6 +3,7 @@ package libmemcached.wrapper;
 import java.util.HashMap;
 
 import libmemcached.exception.LibMemcachedException;
+import libmemcached.wrapper.type.BehaviorType;
 import libmemcached.wrapper.type.ReturnType;
 
 import org.junit.After;
@@ -27,6 +28,7 @@ public class MemcachedStorageTest {
             client.getStorage().flush(0);
             servers = null;
         }
+        client.getBehavior().set(BehaviorType.SUPPORT_CAS, 0);
         client = null;
     }
     
@@ -34,6 +36,10 @@ public class MemcachedStorageTest {
         servers = client.getServerList();
         servers.append("localhost", 11211);
         servers.push();
+    }
+    
+    private void behaviorCas(){
+        client.getBehavior().set(BehaviorType.SUPPORT_CAS, 1);
     }
     
     @Test
@@ -93,13 +99,46 @@ public class MemcachedStorageTest {
             put("key-4", "value-4");
             put("key-5", "value-5");
         }};
-        storage.getMulti(new MemcachedStorage.Fetcher() {
+        storage.getMulti(new Fetcher() {
             public void fetch(SimpleResult result) {
                 Assert.assertEquals(map.get(result.key), result.value);
                 map.remove(result.key);
             }
         }, map.keySet().toArray(new String[5]));
         Assert.assertEquals(map.size(), 0);
+    }
+    
+    @Test
+    public void gets_no_store() throws LibMemcachedException {
+        connectServer();
+        
+        MemcachedStorage storage = client.getStorage();
+        Assert.assertNull(storage.gets("hoge"));
+    }
+    
+    @Test
+    public void gets_no_behavior_set() throws LibMemcachedException {
+        connectServer();
+        
+        MemcachedStorage storage = client.getStorage();
+        storage.set("hoge", "1234", 10, 0);
+        MemcachedResult result = storage.gets("hoge");
+        System.out.println("cas => " + result.getCAS());
+        Assert.assertNotNull(result);
+        Assert.assertEquals(result.getCAS(), 0);
+    }
+
+    @Test
+    public void gets_cas() throws LibMemcachedException {
+        connectServer();
+        behaviorCas();
+        
+        MemcachedStorage storage = client.getStorage();
+        storage.set("hoge", "1234", 10, 0);
+        MemcachedResult result = storage.gets("hoge");
+        System.out.println("cas => " + result.getCAS());
+        Assert.assertNotNull(result);
+        Assert.assertTrue(-1 < result.getCAS());
     }
 
 }

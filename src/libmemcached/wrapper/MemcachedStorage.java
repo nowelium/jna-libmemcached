@@ -1,6 +1,5 @@
 package libmemcached.wrapper;
 
-import static libmemcached.wrapper.function.StrError.memcached_strerror;
 import static libmemcached.wrapper.function.Auto.memcached_decrement;
 import static libmemcached.wrapper.function.Auto.memcached_decrement_with_initial;
 import static libmemcached.wrapper.function.Auto.memcached_increment;
@@ -26,6 +25,7 @@ import static libmemcached.wrapper.function.Storage.memcached_replace;
 import static libmemcached.wrapper.function.Storage.memcached_replace_by_key;
 import static libmemcached.wrapper.function.Storage.memcached_set;
 import static libmemcached.wrapper.function.Storage.memcached_set_by_key;
+import static libmemcached.wrapper.function.StrError.memcached_strerror;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -35,10 +35,6 @@ import libmemcached.result.memcached_result_st;
 import libmemcached.wrapper.type.ReturnType;
 
 public class MemcachedStorage {
-    
-    public static interface Fetcher {
-        public void fetch(SimpleResult result);
-    }
     
     protected final MemcachedClient memcached;
     
@@ -58,6 +54,14 @@ public class MemcachedStorage {
     
     public SimpleResult getResultByKey(String masterKey, String key) throws LibMemcachedException {
         return memcached_get_by_key(memcached.memcached_st, masterKey, key);
+    }
+    
+    public MemcachedResult gets(String key) throws LibMemcachedException {
+        ReturnType rt = getMulti(key);
+        if(!ReturnType.SUCCESS.equals(rt)){
+            throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()));
+        }
+        return fetchResult();
     }
     
     public String get(String key) throws LibMemcachedException {
