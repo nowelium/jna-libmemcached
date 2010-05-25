@@ -31,6 +31,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import libmemcached.exception.LibMemcachedException;
+import libmemcached.result.memcached_result_st;
 import libmemcached.wrapper.type.ReturnType;
 
 public class MemcachedStorage {
@@ -113,15 +114,26 @@ public class MemcachedStorage {
     }
     
     public MemcachedResult fetchResult() throws LibMemcachedException {
-        return memcached.createResult(memcached_fetch_result(memcached.memcached_st));
+        memcached_result_st result = memcached_fetch_result(memcached.memcached_st);
+        if(null == result){
+            return null;
+        }
+        return memcached.createResult(result);
     }
     
-    public MemcachedResult fetchResult(MemcachedResult result) throws LibMemcachedException {
-        return memcached.createResult(memcached_fetch_result(memcached.memcached_st, result.result_st));
+    public MemcachedResult fetchResult(MemcachedResult parent) throws LibMemcachedException {
+        memcached_result_st result = memcached_fetch_result(memcached.memcached_st, parent.result_st);
+        if(null == result){
+            return null;
+        }
+        return memcached.createResult(result);
     }
     
     public String fetchString() throws LibMemcachedException {
         SimpleResult result = fetch();
+        if(null == result){
+            return null;
+        }
         return result.getValue();
     }
     
