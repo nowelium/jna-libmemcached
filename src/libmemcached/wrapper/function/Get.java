@@ -1,6 +1,10 @@
 package libmemcached.wrapper.function;
 
 import static libmemcached.wrapper.function.StrError.memcached_strerror;
+
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+
 import libmemcached.constants;
 import libmemcached.compat.size_t;
 import libmemcached.exception.LibMemcachedException;
@@ -116,7 +120,16 @@ public class Get extends Function {
         }
         
         String key = new String(returnKey, 0, key_length.getValue());
-        String value = result.substring(0, value_length.getValue());
+        //String value = result.substring(0, value_length.getValue());
+        
+        // TODO: this should not be hardcoded to 1024 bytes
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        buffer.put(result.getBytes());
+        
+        int length = value_length.getValue();
+        buffer.position(0);
+        buffer.limit(length);
+        String value = Charset.forName("UTF-8").decode(buffer).toString();
         return new SimpleResult(key, value, value_length.getValue(), flags.getValue());
     }
 
