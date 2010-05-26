@@ -13,7 +13,7 @@ import com.sun.jna.ptr.IntByReference;
 public class Server extends Function {
     
     public static memcached_server_instance_st memcached_server_by_key(memcached_st ptr, String key) throws LibMemcachedException {
-        size_t key_length = new size_t(key.length());
+        size_t key_length = new size_t(key.getBytes().length);
         IntByReference error = new IntByReference();
         memcached_server_instance_st server_st = getMemcached().memcached_server_by_key(ptr, key, key_length, error);
         int rc = error.getValue();

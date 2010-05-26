@@ -19,7 +19,7 @@ import com.sun.jna.ptr.LongByReference;
 public class Get extends Function {
     
     public static SimpleResult memcached_get(memcached_st ptr, String key) throws LibMemcachedException {
-        size_t key_length = new size_t(key.length());
+        size_t key_length = new size_t(key.getBytes().length);
         LongByReference value_length = new LongByReference();
         IntByReference flags = new IntByReference();
         IntByReference error = new IntByReference();
@@ -36,8 +36,8 @@ public class Get extends Function {
     }
     
     public static SimpleResult memcached_get_by_key(memcached_st ptr, String master_key, String key) throws LibMemcachedException {
-        size_t master_key_length = new size_t(master_key.length());
-        size_t key_length = new size_t(key.length());
+        size_t master_key_length = new size_t(master_key.getBytes().length);
+        size_t key_length = new size_t(key.getBytes().length);
         IntByReference value_length = new IntByReference();
         IntByReference flags = new IntByReference();
         IntByReference error = new IntByReference();
@@ -61,7 +61,7 @@ public class Get extends Function {
     public static ReturnType memcached_mget(memcached_st ptr, String...keys){
         size_t[] size = new size_t[keys.length];
         for(int i = 0; i < keys.length; ++i){
-            size[i] = new size_t(keys[i].length());
+            size[i] = new size_t(keys[i].getBytes().length);
         }
         
         size_t keys_length = new size_t(keys.length);
@@ -72,10 +72,10 @@ public class Get extends Function {
     public static ReturnType memcached_mget_by_key(memcached_st ptr, String master_key, String...keys){
         size_t[] size = new size_t[keys.length];
         for(int i = 0; i < keys.length; ++i){
-            size[i] = new size_t(keys[i].length());
+            size[i] = new size_t(keys[i].getBytes().length);
         }
         
-        size_t master_key_kength = new size_t(master_key.length());
+        size_t master_key_kength = new size_t(master_key.getBytes().length);
         size_t keys_length = new size_t(keys.length);
         int rc = getMemcached().memcached_mget_by_key(ptr, master_key, master_key_kength, keys, size, keys_length);
         return ReturnType.get(rc);

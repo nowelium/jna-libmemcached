@@ -4,6 +4,7 @@ import libmemcached.exception.LibMemcachedException;
 import libmemcached.memcached.memcached_st;
 import libmemcached.result.memcached_result_st;
 import libmemcached.types.memcached_server_list_st;
+import libmemcached.wrapper.SimpleResult;
 import libmemcached.wrapper.type.BehaviorType;
 import libmemcached.wrapper.type.ReturnType;
 
@@ -39,6 +40,34 @@ public class StorageTest {
         } catch(LibMemcachedException e){
             Assert.fail(e.getMessage() + ":" + e.getReturnType());
         }
+    }
+    
+    @Test
+    public void memcached_set() throws LibMemcachedException {
+        connectServer();
+        
+        Storage.memcached_set(mmc, "hoge", "hello", 10, 0);
+        SimpleResult result = Get.memcached_get(mmc, "hoge");
+        Assert.assertEquals("hello", result.getValue());
+    }
+    
+    @Test
+    public void memcached_set_multibyte_value() throws LibMemcachedException {
+        connectServer();
+        
+        Storage.memcached_set(mmc, "hoge", "こんにちは", 10, 0);
+        SimpleResult result = Get.memcached_get(mmc, "hoge");
+        Assert.assertEquals("こんにちは", result.getValue());
+    }
+    
+    @Test
+    public void memcached_set_multibyte_key() throws LibMemcachedException {
+        connectServer();
+        
+        Storage.memcached_set(mmc, "こんにちは", "世界", 10, 0);
+        SimpleResult result = Get.memcached_get(mmc, "こんにちは");
+        System.out.println(result);
+        Assert.assertEquals("世界", result.getValue());
     }
     
     @Test

@@ -51,7 +51,7 @@ public class Result extends Function {
     }
     
     public static ReturnType memcached_result_set_value(memcached_result_st ptr, String value){
-        size_t length = new size_t(value.length());
+        size_t length = new size_t(value.getBytes().length);
         int rc = getMemcached().memcached_result_set_value(ptr, value, length);
         return ReturnType.get(rc);
     }
