@@ -122,7 +122,7 @@ public class MemcachedStorage {
         if(null == result){
             return null;
         }
-        return memcached.createResult(result);
+        return new MemcachedResult(memcached, result);
     }
     
     public MemcachedResult fetchResult(MemcachedResult parent) throws LibMemcachedException {
@@ -130,7 +130,7 @@ public class MemcachedStorage {
         if(null == result){
             return null;
         }
-        return memcached.createResult(result);
+        return new MemcachedResult(memcached, result);
     }
     
     public String fetchString() throws LibMemcachedException {

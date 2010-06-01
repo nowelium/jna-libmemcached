@@ -1,12 +1,14 @@
 package libmemcached.wrapper;
 
 import static libmemcached.wrapper.function.Quit.memcached_quit_server;
+import static libmemcached.wrapper.function.Server.memcached_server_by_key;
 import static libmemcached.wrapper.function.Server.memcached_server_clone;
 import static libmemcached.wrapper.function.Server.memcached_server_error;
 import static libmemcached.wrapper.function.Server.memcached_server_free;
 import static libmemcached.wrapper.function.Server.memcached_server_name;
 import static libmemcached.wrapper.function.Server.memcached_server_port;
 import static libmemcached.wrapper.function.Server.memcached_server_response_count;
+import libmemcached.exception.LibMemcachedException;
 import libmemcached.types.memcached_server_instance_st;
 
 public class MemcachedServer {
@@ -23,6 +25,10 @@ public class MemcachedServer {
             memcached_server_free(server_st);
         }
     };
+    
+    protected MemcachedServer(MemcachedClient memcached, String key) throws LibMemcachedException {
+        this(memcached, memcached_server_by_key(memcached.memcached_st, key));
+    }
     
     protected MemcachedServer(MemcachedClient memcached, memcached_server_instance_st server_st){
         this.memcached = memcached;

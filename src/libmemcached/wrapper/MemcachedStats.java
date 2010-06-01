@@ -1,5 +1,6 @@
 package libmemcached.wrapper;
 
+import static libmemcached.wrapper.function.Stats.memcached_stat;
 import static libmemcached.wrapper.function.Stats.memcached_stat_free;
 import static libmemcached.wrapper.function.Stats.memcached_stat_get_keys;
 import static libmemcached.wrapper.function.Stats.memcached_stat_get_value;
@@ -23,9 +24,9 @@ public class MemcachedStats {
         }
     };
     
-    protected MemcachedStats(MemcachedClient memcached, memcached_stat_st stat_st) {
+    protected MemcachedStats(MemcachedClient memcached, String args) throws LibMemcachedException {
         this.memcached = memcached;
-        this.stat_st = stat_st;
+        this.stat_st = memcached_stat(memcached.memcached_st, args);
     }
     
     public ReturnType serverName(String args, String hostname, int port){

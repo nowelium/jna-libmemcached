@@ -52,6 +52,11 @@ public interface compat {
         public flags_struct flags;
         public options_struct options;
         
+        public hashkit_st(){
+            super();
+            setAutoSynch(false);
+        }
+        
         public static class ByReference extends hashkit_st implements Structure.ByReference {
             
         }
@@ -67,6 +72,11 @@ public interface compat {
             public hashkit_hash_function function;
             public Pointer context;
             
+            public hashkit_function_st(){
+                super();
+                setAutoSynch(false);
+            }
+            
             public static class ByReference extends hashkit_function_st implements Structure.ByReference {
                 
             }
@@ -76,6 +86,11 @@ public interface compat {
         }
         public static class flags_struct extends Structure {
             public boolean is_base_same_distributed;
+            
+            public flags_struct(){
+                super();
+                setAutoSynch(false);
+            }
 
             public static class ByReference extends flags_struct implements Structure.ByReference {
                 
@@ -86,6 +101,11 @@ public interface compat {
         }
         public static class options_struct extends Structure {
             public boolean is_allocated;
+            
+            public options_struct(){
+                super();
+                setAutoSynch(false);
+            }
 
             public static class ByReference extends options_struct implements Structure.ByReference {
                 

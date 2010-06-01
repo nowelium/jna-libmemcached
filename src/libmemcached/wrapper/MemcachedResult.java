@@ -1,6 +1,7 @@
 package libmemcached.wrapper;
 
 import static libmemcached.wrapper.function.Result.memcached_result_cas;
+import static libmemcached.wrapper.function.Result.memcached_result_create;
 import static libmemcached.wrapper.function.Result.memcached_result_flags;
 import static libmemcached.wrapper.function.Result.memcached_result_free;
 import static libmemcached.wrapper.function.Result.memcached_result_key_length;
@@ -28,6 +29,10 @@ public class MemcachedResult {
             memcached_result_free(result_st);
         }
     };
+    
+    protected MemcachedResult(MemcachedClient memcached){
+        this(memcached, memcached_result_create(memcached.memcached_st));
+    }
     
     protected MemcachedResult(MemcachedClient memcached, memcached_result_st result_st){
         this.memcached = memcached;

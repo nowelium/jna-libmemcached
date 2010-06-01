@@ -2,10 +2,12 @@ package libmemcached.wrapper;
 
 import static libmemcached.wrapper.function.Pool.memcached_pool_behavior_get;
 import static libmemcached.wrapper.function.Pool.memcached_pool_behavior_set;
+import static libmemcached.wrapper.function.Pool.memcached_pool_create;
 import static libmemcached.wrapper.function.Pool.memcached_pool_destroy;
 import static libmemcached.wrapper.function.Pool.memcached_pool_pop;
 import static libmemcached.wrapper.function.Pool.memcached_pool_push;
 import libmemcached.exception.LibMemcachedException;
+import libmemcached.exception.MaximumPoolException;
 import libmemcached.memcached.memcached_st;
 import libmemcached.util.pool.memcached_pool_st;
 import libmemcached.wrapper.type.BehaviorType;
@@ -26,12 +28,12 @@ public class MemcachedPool {
         }
     };
     
-    protected MemcachedPool(MemcachedClient memcached, memcached_pool_st pool_st){
+    protected MemcachedPool(MemcachedClient memcached, int initial, int max){
         this.memcached = memcached;
-        this.pool_st = pool_st;
+        this.pool_st = memcached_pool_create(memcached.memcached_st, initial, max);
     }
     
-    public MemcachedClient pop(boolean block) throws LibMemcachedException {
+    public MemcachedClient pop(boolean block) throws LibMemcachedException, MaximumPoolException {
         memcached_st mmc = memcached_pool_pop(pool_st, block);
         return memcached.newInstance(mmc);
     }

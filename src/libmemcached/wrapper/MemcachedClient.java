@@ -1,29 +1,21 @@
 package libmemcached.wrapper;
 
-import static libmemcached.wrapper.function.Analyze.memcached_analyze;
 import static libmemcached.wrapper.function.Memcached.memcached_clone;
 import static libmemcached.wrapper.function.Memcached.memcached_create;
 import static libmemcached.wrapper.function.Memcached.memcached_free;
 import static libmemcached.wrapper.function.Quit.memcached_quit;
-import static libmemcached.wrapper.function.Result.memcached_result_create;
 import static libmemcached.wrapper.function.Server.memcached_server_add;
 import static libmemcached.wrapper.function.Server.memcached_server_add_udp;
 import static libmemcached.wrapper.function.Server.memcached_server_add_udp_with_weight;
 import static libmemcached.wrapper.function.Server.memcached_server_add_unix_socket;
 import static libmemcached.wrapper.function.Server.memcached_server_add_unix_socket_with_weight;
 import static libmemcached.wrapper.function.Server.memcached_server_add_with_weight;
-import static libmemcached.wrapper.function.Server.memcached_server_by_key;
-import static libmemcached.wrapper.function.Stats.memcached_stat;
 import static libmemcached.wrapper.function.StrError.memcached_strerror;
 import static libmemcached.wrapper.function.Verbosity.memcached_verbosity;
 import static libmemcached.wrapper.function.Version.memcached_lib_version;
 import static libmemcached.wrapper.function.Version.memcached_version;
-import libmemcached.analyze.memcached_analysis_st;
 import libmemcached.exception.LibMemcachedException;
 import libmemcached.memcached.memcached_st;
-import libmemcached.result.memcached_result_st;
-import libmemcached.stats.memcached_stat_st;
-import libmemcached.types.memcached_server_instance_st;
 import libmemcached.wrapper.type.ReturnType;
 
 public class MemcachedClient {
@@ -128,27 +120,23 @@ public class MemcachedClient {
     }
     
     public MemcachedServer createServer(String key) throws LibMemcachedException {
-        memcached_server_instance_st server_st = memcached_server_by_key(memcached_st, key);
-        return new MemcachedServer(this, server_st);
+        return new MemcachedServer(this, key);
     }
     
     public MemcachedStats createStats(String args) throws LibMemcachedException {
-        memcached_stat_st stat_st = memcached_stat(memcached_st, args);
-        return new MemcachedStats(this, stat_st);
+        return new MemcachedStats(this, args);
     }
     
     public MemcachedAnalyze createAnalyze(MemcachedStats stats) throws LibMemcachedException {
-        memcached_analysis_st analysis_st = memcached_analyze(memcached_st, stats.stat_st);
-        return new MemcachedAnalyze(analysis_st);
+        return new MemcachedAnalyze(this, stats);
     }
     
     public MemcachedResult createResult(){
-        memcached_result_st result_st = memcached_result_create(memcached_st);
-        return new MemcachedResult(this, result_st);
+        return new MemcachedResult(this);
     }
     
-    protected MemcachedResult createResult(memcached_result_st result_st){
-        return new MemcachedResult(this, result_st);
+    public MemcachedPool createPool(int initial, int max){
+        return new MemcachedPool(this, initial, max);
     }
     
     public void quit(){

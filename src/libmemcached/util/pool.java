@@ -2,18 +2,19 @@ package libmemcached.util;
 
 import libmemcached.memcached.memcached_st;
 
-import com.sun.jna.Structure;
+import com.sun.jna.Pointer;
+import com.sun.jna.PointerType;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 
 public interface pool {
     
-    public static class memcached_pool_st extends Structure {
-        public static class ByReference extends memcached_pool_st implements Structure.ByReference {
-
+    public static class memcached_pool_st extends PointerType {
+        public memcached_pool_st(){
+            super();
         }
-        public static class ByValue extends memcached_pool_st implements Structure.ByValue {
-
+        public memcached_pool_st(Pointer pointer){
+            super(pointer);
         }
     }
 
