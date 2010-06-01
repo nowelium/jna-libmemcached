@@ -37,31 +37,34 @@ public class MemcachedServerList {
         this.memcached = memcached;
     }
     
-    public void append(String hostname, int port) throws LibMemcachedException {
+    public MemcachedServerList append(String hostname, int port) throws LibMemcachedException {
         lock.lock();
         
         try {
             server_st = memcached_server_list_append(server_st, hostname, port);
+            return this;
         } finally {
             lock.unlock();
         }
     }
     
-    public void append(String hostname, int port, int weight) throws LibMemcachedException {
+    public MemcachedServerList append(String hostname, int port, int weight) throws LibMemcachedException {
         lock.lock();
         
         try {
             server_st = memcached_server_list_append_with_weight(server_st, hostname, port, weight);
+            return this;
         } finally {
             lock.unlock();
         }
     }
     
-    public void parse(String server_strings) {
+    public MemcachedServerList parse(String server_strings) {
         lock.lock();
         
         try {
             server_st = memcached_servers_parse(server_strings);
+            return this;
         } finally {
             lock.unlock();
         }
