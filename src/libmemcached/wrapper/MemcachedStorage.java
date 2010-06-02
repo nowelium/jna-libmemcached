@@ -74,6 +74,9 @@ public class MemcachedStorage {
     
     public String getByKey(String masterKey, String key) throws LibMemcachedException {
         SimpleResult result = getResultByKey(masterKey, key);
+        if(null == result){
+            return null;
+        }
         return result.getValue();
     }
     
@@ -90,7 +93,7 @@ public class MemcachedStorage {
         try {
             ReturnType rt = memcached_mget(memcached.memcached_st, keys);
             if(!ReturnType.SUCCESS.equals(rt)){
-                throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()));
+                throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()), rt);
             }
             
             fetch(fetcher);
@@ -104,7 +107,7 @@ public class MemcachedStorage {
         try {
             ReturnType rt = memcached_mget_by_key(memcached.memcached_st, masterKey, keys);
             if(!ReturnType.SUCCESS.equals(rt)){
-                throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()));
+                throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()), rt);
             }
             
             fetch(fetcher);
@@ -143,14 +146,9 @@ public class MemcachedStorage {
     
     public void fetch(Fetcher fetcher) throws LibMemcachedException {
         SimpleResult result = null;
-        do {
-            result = memcached_fetch(memcached.memcached_st);
-            if(result == null){
-                break;
-            }
-            
+        while((result = memcached_fetch(memcached.memcached_st)) != null){
             fetcher.fetch(result);
-        } while(result != null);
+        }
     }
     
     public ReturnType delete(String key, int expiration){

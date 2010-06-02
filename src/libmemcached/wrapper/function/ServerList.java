@@ -21,7 +21,8 @@ public class ServerList extends Function {
     }
     
     public static memcached_server_list_st memcached_server_list_append(memcached_server_list_st server_list_st, String hostname, int port) throws LibMemcachedException {
-        IntByReference error = new IntByReference();
+        final IntByReference error = new IntByReference();
+        
         memcached_server_list_st list_st = getMemcached().memcached_server_list_append(server_list_st, hostname, port, error);
         int rc = error.getValue();
         if(!ReturnType.SUCCESS.equalValue(rc)){
@@ -31,7 +32,8 @@ public class ServerList extends Function {
     }
 
     public static memcached_server_list_st memcached_server_list_append_with_weight(memcached_server_list_st server_list_st, String hostname, int port, int weight) throws LibMemcachedException {
-        IntByReference error = new IntByReference();
+        final IntByReference error = new IntByReference();
+        
         memcached_server_list_st list_st = getMemcached().memcached_server_list_append_with_weight(server_list_st, hostname, port, weight, error);
         int rc = error.getValue();
         if(!ReturnType.SUCCESS.equalValue(rc)){

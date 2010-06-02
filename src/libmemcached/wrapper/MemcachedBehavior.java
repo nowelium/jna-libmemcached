@@ -25,6 +25,10 @@ public class MemcachedBehavior {
         return memcached_behavior_set(memcached.memcached_st, type, data);
     }
     
+    public ReturnType set(BehaviorType type, boolean data){
+        return set(type, data ? 1 : 0);
+    }
+    
     public long get(BehaviorType type){
         return memcached_behavior_get(memcached.memcached_st, type);
     }

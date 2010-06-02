@@ -116,6 +116,13 @@ public class GetTest {
     }
     
     @Test
+    public void memcached_mget_no_keys() throws LibMemcachedException {
+        connectServer();
+        
+        Assert.assertEquals(Get.memcached_mget(mmc, new String[]{}), ReturnType.NOTFOUND);
+    }
+    
+    @Test
     public void memcached_mget_single() throws LibMemcachedException {
         connectServer();
         

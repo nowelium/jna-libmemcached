@@ -18,13 +18,16 @@ import com.sun.jna.ptr.LongByReference;
 
 public class Get extends Function {
     
+    protected static final Charset charset = Charset.forName("UTF-8");
+    
     public static SimpleResult memcached_get(memcached_st ptr, String key) throws LibMemcachedException {
-        size_t key_length = new size_t(key.getBytes().length);
-        LongByReference value_length = new LongByReference();
-        IntByReference flags = new IntByReference();
-        IntByReference error = new IntByReference();
+        final size_t key_length = new size_t(key.getBytes().length);
+        final LongByReference value_length = new LongByReference();
+        final IntByReference flags = new IntByReference();
+        final IntByReference error = new IntByReference();
         
-        String value = getMemcached().memcached_get(ptr, key, key_length, value_length, flags, error);
+        final String value = getMemcached().memcached_get(ptr, key, key_length, value_length, flags, error);
+        
         int rc = error.getValue();
         if(ReturnType.NOTFOUND.equalValue(rc)){
             return null;
@@ -36,13 +39,13 @@ public class Get extends Function {
     }
     
     public static SimpleResult memcached_get_by_key(memcached_st ptr, String master_key, String key) throws LibMemcachedException {
-        size_t master_key_length = new size_t(master_key.getBytes().length);
-        size_t key_length = new size_t(key.getBytes().length);
-        IntByReference value_length = new IntByReference();
-        IntByReference flags = new IntByReference();
-        IntByReference error = new IntByReference();
+        final size_t master_key_length = new size_t(master_key.getBytes().length);
+        final size_t key_length = new size_t(key.getBytes().length);
+        final IntByReference value_length = new IntByReference();
+        final IntByReference flags = new IntByReference();
+        final IntByReference error = new IntByReference();
         
-        String result = getMemcached().memcached_get_by_key(
+        final String result = getMemcached().memcached_get_by_key(
             ptr,
             master_key, master_key_length,
             key, key_length,
@@ -51,6 +54,9 @@ public class Get extends Function {
             error
         );
         int rc = error.getValue();
+        if(ReturnType.NOTFOUND.equalValue(rc)){
+            return null;
+        }
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached_strerror(ptr, rc));
         }
@@ -59,24 +65,34 @@ public class Get extends Function {
     }
     
     public static ReturnType memcached_mget(memcached_st ptr, String...keys){
-        size_t[] size = new size_t[keys.length];
-        for(int i = 0; i < keys.length; ++i){
+        final int length = keys.length;
+        if(length < 1){
+            return ReturnType.NOTFOUND;
+        }
+        
+        final size_t[] size = new size_t[length];
+        for(int i = 0; i < length; ++i){
             size[i] = new size_t(keys[i].getBytes().length);
         }
         
-        size_t keys_length = new size_t(keys.length);
+        size_t keys_length = new size_t(length);
         int rc = getMemcached().memcached_mget(ptr, keys, size, keys_length);
         return ReturnType.get(rc);
     }
     
     public static ReturnType memcached_mget_by_key(memcached_st ptr, String master_key, String...keys){
-        size_t[] size = new size_t[keys.length];
-        for(int i = 0; i < keys.length; ++i){
+        final int length = keys.length;
+        if(length < 1){
+            return ReturnType.NOTFOUND;
+        }
+        
+        final size_t[] size = new size_t[length];
+        for(int i = 0; i < length; ++i){
             size[i] = new size_t(keys[i].getBytes().length);
         }
         
         size_t master_key_kength = new size_t(master_key.getBytes().length);
-        size_t keys_length = new size_t(keys.length);
+        size_t keys_length = new size_t(length);
         int rc = getMemcached().memcached_mget_by_key(ptr, master_key, master_key_kength, keys, size, keys_length);
         return ReturnType.get(rc);
     }
@@ -86,13 +102,13 @@ public class Get extends Function {
     }
     
     public static memcached_result_st memcached_fetch_result(memcached_st ptr, memcached_result_st result_st) throws LibMemcachedException {
-        IntByReference error = new IntByReference();
+        final IntByReference error = new IntByReference();
+        
         memcached_result_st result = getMemcached().memcached_fetch_result(ptr, result_st, error);
         int rc = error.getValue();
         if(ReturnType.END.equalValue(rc)){
             return null;
         }
-        
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached_strerror(ptr, rc), ReturnType.get(rc));
         }
@@ -100,12 +116,13 @@ public class Get extends Function {
     }
     
     public static SimpleResult memcached_fetch(memcached_st ptr) throws LibMemcachedException {
-        IntByReference key_length = new IntByReference();
-        byte[] returnKey = new byte[constants.MEMCACHED_MAX_KEY];
-        IntByReference value_length = new IntByReference();
-        IntByReference flags = new IntByReference();
-        IntByReference error = new IntByReference();
-        String result = getMemcached().memcached_fetch(
+        final IntByReference key_length = new IntByReference();
+        final byte[] returnKey = new byte[constants.MEMCACHED_MAX_KEY];
+        final IntByReference value_length = new IntByReference();
+        final IntByReference flags = new IntByReference();
+        final IntByReference error = new IntByReference();
+        
+        final String result = getMemcached().memcached_fetch(
             ptr,
             returnKey, key_length, value_length,
             flags, error
@@ -119,18 +136,21 @@ public class Get extends Function {
             throw new LibMemcachedException(memcached_strerror(ptr, rc));
         }
         
-        String key = new String(returnKey, 0, key_length.getValue());
-        //String value = result.substring(0, value_length.getValue());
-        
+        int keylen = key_length.getValue();
+        int valuelen = value_length.getValue();
+        String key = byteToString(returnKey, 0, keylen);
+        String value = byteToString(result.getBytes(), 0, valuelen);
+        return new SimpleResult(key, value, valuelen, flags.getValue());
+    }
+    
+    protected static String byteToString(byte[] bytes, int position, int limit){
         // TODO: this should not be hardcoded to 1024 bytes
         ByteBuffer buffer = ByteBuffer.allocate(1024);
-        buffer.put(result.getBytes());
+        buffer.put(bytes);
+        buffer.position(position);
+        buffer.limit(limit);
         
-        int length = value_length.getValue();
-        buffer.position(0);
-        buffer.limit(length);
-        String value = Charset.forName("UTF-8").decode(buffer).toString();
-        return new SimpleResult(key, value, value_length.getValue(), flags.getValue());
+        return charset.decode(buffer).toString();
     }
 
 }

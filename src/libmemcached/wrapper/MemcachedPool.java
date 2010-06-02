@@ -7,10 +7,12 @@ import static libmemcached.wrapper.function.Pool.memcached_pool_destroy;
 import static libmemcached.wrapper.function.Pool.memcached_pool_pop;
 import static libmemcached.wrapper.function.Pool.memcached_pool_push;
 import libmemcached.exception.LibMemcachedException;
+import libmemcached.exception.LibMemcachedRuntimeException;
 import libmemcached.exception.MaximumPoolException;
 import libmemcached.memcached.memcached_st;
 import libmemcached.util.pool.memcached_pool_st;
 import libmemcached.wrapper.type.BehaviorType;
+import libmemcached.wrapper.type.DistributionType;
 import libmemcached.wrapper.type.ReturnType;
 
 public class MemcachedPool {
@@ -44,6 +46,17 @@ public class MemcachedPool {
     
     public ReturnType setBehavior(BehaviorType type, long data){
         return memcached_pool_behavior_set(pool_st, type, data);
+    }
+    
+    public ReturnType setBehavior(BehaviorType type, boolean data){
+        return setBehavior(type, data ? 1 : 0);
+    }
+    
+    public ReturnType setBehavior(BehaviorType type, DistributionType data){
+        if(!BehaviorType.DISTRIBUTION.equals(type)){
+            throw new LibMemcachedRuntimeException("behavior type not BehaviorType.DISTRIBUTION " + type);
+        }
+        return setBehavior(type, data.getValue());
     }
     
     public long getBehavior(BehaviorType type) throws LibMemcachedException {
