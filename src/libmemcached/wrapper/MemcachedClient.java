@@ -32,8 +32,8 @@ public class MemcachedClient {
     private final Object finalizer = new Object(){
         @Override
         protected void finalize() throws Throwable {
-            super.finalize();
             memcached_free(memcached_st);
+            super.finalize();
         }
     };
     
