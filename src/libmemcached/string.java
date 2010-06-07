@@ -20,6 +20,11 @@ public interface string {
         // C type: options
         public options_struct options;
         
+        public memcached_string_st(){
+            super();
+            setAutoSynch(false);
+        }
+        
         public static class ByReference extends memcached_string_st implements Structure.ByReference {
             
         }
@@ -32,6 +37,11 @@ public interface string {
             public boolean is_allocated;
             // C type: bool
             public boolean is_initialized;
+            
+            public options_struct(){
+                super();
+                setAutoSynch(false);
+            }
             
             public static class ByReference extends options_struct implements Structure.ByReference {
                 

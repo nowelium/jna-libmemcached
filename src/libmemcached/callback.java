@@ -16,6 +16,11 @@ public interface callback {
         // C type: uint32_t
         public int number_of_callback;
         
+        public memcached_callback_st(){
+            super();
+            setAutoSynch(false);
+        }
+        
         public static class ByReference extends memcached_callback_st implements Structure.ByReference {
             
         }

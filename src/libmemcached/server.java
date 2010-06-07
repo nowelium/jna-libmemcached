@@ -12,6 +12,7 @@ import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 
 public interface server {
+    
     public static class memcached_server_st extends Structure {
         // C type: options
         public options_struct options;

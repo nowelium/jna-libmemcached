@@ -28,6 +28,11 @@ public interface analyze {
         // C type: uint64_t
         public long least_remaining_bytes;
         
+        public memcached_analysis_st(){
+            super();
+            setAutoSynch(false);
+        }
+        
         public static class ByReference extends memcached_analysis_st implements Structure.ByReference {
             
         }

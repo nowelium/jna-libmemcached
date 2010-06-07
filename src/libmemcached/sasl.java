@@ -16,11 +16,7 @@ public interface sasl {
         
         public memcached_sasl_st() {
             super();
-        }
-        public memcached_sasl_st(Pointer callbacks, boolean is_allocated) {
-            super();
-            this.callbacks = callbacks;
-            this.is_allocated = is_allocated;
+            setAutoSynch(false);
         }
         
         public static class ByReference extends memcached_sasl_st implements Structure.ByReference {
