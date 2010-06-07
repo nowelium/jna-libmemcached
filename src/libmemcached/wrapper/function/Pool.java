@@ -22,9 +22,9 @@ public class Pool extends Function {
     }
     
     public static memcached_st memcached_pool_pop(memcached_pool_st pool, boolean block) throws LibMemcachedException, MaximumPoolException {
-        IntByReference error = new IntByReference();
-        memcached_st mmc = getPool().memcached_pool_pop(pool, block, error);
-        int rc = error.getValue();
+        final IntByReference error = new IntByReference();
+        final memcached_st mmc = getPool().memcached_pool_pop(pool, block, error);
+        final int rc = error.getValue();
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached_strerror(rc));
         }
@@ -35,18 +35,18 @@ public class Pool extends Function {
     }
     
     public static ReturnType memcached_pool_push(memcached_pool_st pool, memcached_st mmc){
-        int rc = getPool().memcached_pool_push(pool, mmc);
+        final int rc = getPool().memcached_pool_push(pool, mmc);
         return ReturnType.get(rc);
     }
     
     public static ReturnType memcached_pool_behavior_set(memcached_pool_st ptr, BehaviorType flag, long data){
-        int rc = getPool().memcached_pool_behavior_set(ptr, flag.getValue(), data);
+        final int rc = getPool().memcached_pool_behavior_set(ptr, flag.getValue(), data);
         return ReturnType.get(rc);
     }
     
     public static long memcached_pool_behavior_get(memcached_pool_st pool, BehaviorType flag) throws LibMemcachedException {
-        LongByReference value = new LongByReference();
-        int rc = getPool().memcached_pool_behavior_get(pool, flag.getValue(), value);
+        final LongByReference value = new LongByReference();
+        final int rc = getPool().memcached_pool_behavior_get(pool, flag.getValue(), value);
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached_strerror(rc));
         }
