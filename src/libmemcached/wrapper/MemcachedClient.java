@@ -50,10 +50,10 @@ public class MemcachedClient {
     }
 
     @Override
-    protected MemcachedClient clone() throws CloneNotSupportedException {
+    public MemcachedClient clone() throws CloneNotSupportedException {
         memcached_st source = this.memcached_st;
-        memcached_st dest = memcached_create();
-        if(null == memcached_clone(dest, source)){
+        memcached_st dest = memcached_clone(null, source);
+        if(null == dest){
             throw new CloneNotSupportedException("memcached_clone() failed.");
         }
         return new MemcachedClient(dest);
