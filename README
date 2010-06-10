@@ -11,6 +11,7 @@ jna-libmemcached
 
 documents:
 ----
+
   http://nowelium.github.com/jna-libmemcached/
 
 
@@ -87,3 +88,9 @@ example
 
 
 
+note
+----
+
+64bit OSX libmemcached configure option::
+
+    ./configure --prefix=/usr  --enable-fat-binaries

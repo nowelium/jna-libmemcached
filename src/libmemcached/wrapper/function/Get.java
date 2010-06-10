@@ -145,7 +145,7 @@ public class Get extends Function {
     
     protected static String byteToString(byte[] bytes, int position, int limit){
         // TODO: this should not be hardcoded to 1024 bytes
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocateDirect(1024);
         buffer.put(bytes);
         buffer.position(position);
         buffer.limit(limit);
