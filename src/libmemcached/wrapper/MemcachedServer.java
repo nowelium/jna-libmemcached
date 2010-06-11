@@ -21,8 +21,8 @@ public class MemcachedServer {
     private final Object finalizer = new Object(){
         @Override
         protected void finalize() throws Throwable {
-            super.finalize();
             memcached_server_free(server_st);
+            super.finalize();
         }
     };
     

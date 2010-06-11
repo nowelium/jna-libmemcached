@@ -26,10 +26,10 @@ public class MemcachedServerList {
     private final Object finalizer = new Object(){
         @Override
         protected void finalize() throws Throwable {
-            super.finalize();
             if(null != server_st){
                 memcached_server_list_free(server_st);
             }
+            super.finalize();
         }
     };
     

@@ -13,8 +13,8 @@ public class MemcachedAnalyze {
     private final Object finalizer = new Object(){
         @Override
         protected void finalize() throws Throwable {
-            super.finalize();
             memcached_analyze_free(analysis_st);
+            super.finalize();
         }
     };
     

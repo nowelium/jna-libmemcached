@@ -21,15 +21,6 @@ public class MemcachedResult {
     
     protected final memcached_result_st result_st;
     
-    @SuppressWarnings("unused")
-    private final Object finalizer = new Object(){
-        @Override
-        protected void finalize() throws Throwable {
-            super.finalize();
-            memcached_result_free(result_st);
-        }
-    };
-    
     protected MemcachedResult(MemcachedClient memcached){
         this(memcached, memcached_result_create(memcached.memcached_st));
     }
@@ -77,6 +68,10 @@ public class MemcachedResult {
     
     public void reset(){
         memcached_result_reset(result_st);
+    }
+    
+    public void free(){
+        memcached_result_free(result_st);
     }
 
 }

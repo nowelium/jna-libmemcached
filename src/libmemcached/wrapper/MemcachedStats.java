@@ -19,8 +19,8 @@ public class MemcachedStats {
     private final Object finalizer = new Object(){
         @Override
         protected void finalize() throws Throwable {
-            super.finalize();
             memcached_stat_free(memcached.memcached_st, stat_st);
+            super.finalize();
         }
     };
     

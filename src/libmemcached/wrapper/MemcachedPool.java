@@ -25,8 +25,8 @@ public class MemcachedPool {
     private final Object finalizer = new Object(){
         @Override
         protected void finalize() throws Throwable {
-            super.finalize();
             memcached_pool_destroy(pool_st);
+            super.finalize();
         }
     };
     
