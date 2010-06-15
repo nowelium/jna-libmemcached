@@ -252,42 +252,68 @@ public class MemcachedStorageTest {
     }
     
     @Test
+    @Ignore("BUFFER_REQUESTS gets might not work well without NO_BLOCK also enabled")
+    public void gets_cas_with_buffer_request() throws LibMemcachedException {
+        connectServer();
+        behaviorCas();
+        client.getBehavior().set(BehaviorType.BUFFER_REQUESTS, true);
+        
+        MemcachedStorage storage = client.getStorage();
+        storage.gets("test");
+        storage.set("test", "test-value", 10, 0);
+        {
+            MemcachedResult result = storage.gets("test");
+            ReturnType rt = storage.cas("test", "test-value2", 10, 0, result.getCAS());
+            if(!ReturnType.SUCCESS.equals(rt)){
+                Assert.fail();
+            }
+        }
+        {
+            MemcachedResult result = storage.gets("test");
+            ReturnType rt = storage.cas("test", "test-value3", 10, 0, result.getCAS());
+            if(!ReturnType.SUCCESS.equals(rt)){
+                Assert.fail();
+            }
+        }
+        Assert.assertEquals(storage.get("test"), "test-value3");
+    }
+    
+    @Test
+    public void gets_cas_with_buffer_request__and__no_block() throws LibMemcachedException {
+        connectServer();
+        behaviorCas();
+        client.getBehavior().set(BehaviorType.BUFFER_REQUESTS, true);
+        client.getBehavior().set(BehaviorType.NO_BLOCK, true);
+        
+        MemcachedStorage storage = client.getStorage();
+        storage.gets("test");
+        storage.set("test", "test-value", 10, 0);
+        {
+            MemcachedResult result = storage.gets("test");
+            ReturnType rt = storage.cas("test", "test-value2", 10, 0, result.getCAS());
+            if(!ReturnType.SUCCESS.equals(rt)){
+                Assert.fail();
+            }
+        }
+        {
+            MemcachedResult result = storage.gets("test");
+            ReturnType rt = storage.cas("test", "test-value3", 10, 0, result.getCAS());
+            if(!ReturnType.SUCCESS.equals(rt)){
+                Assert.fail();
+            }
+        }
+        Assert.assertEquals(storage.get("test"), "test-value3");
+    }
+    
+    @Test
     public void cas_MT() throws LibMemcachedException, InterruptedException, ExecutionException {
         connectServer();
         behaviorCas();
         
-        class T implements Callable<String> {
-            MemcachedStorage s;
-            T(MemcachedStorage s){
-                this.s = s;
-            }
-            public String call() throws Exception {
-                int i = 0;
-                while(true){
-                    if(10 < i++){
-                        throw new RuntimeException("max execution");
-                    }
-                    
-                    MemcachedResult r = s.gets("cas-test");
-                    if(r == null){
-                        s.set("cas-test", "0", 10, 0);
-                        return "0";
-                    }
-                    int val = Integer.parseInt(r.getValue());
-                    String valStr = Integer.toString(val + 1);
-                    ReturnType rt = s.cas("cas-test", valStr, 10, 0, r.getCAS());
-                    if(!ReturnType.SUCCESS.equals(rt)){
-                        continue;
-                    }
-                    return valStr;
-                }
-            }
-        }
-        
         List<String> accepts = new ArrayList<String>();
         List<Callable<String>> tasks = new ArrayList<Callable<String>>();
         for(int i = 0; i < 50; i++){
-            tasks.add(new T(client.getStorage()));
+            tasks.add(new TestCAS_increment(client.getStorage()));
             accepts.add(Integer.toString(i));
         }
         
@@ -302,57 +328,32 @@ public class MemcachedStorageTest {
         Assert.assertTrue(accepts.isEmpty());
     }
     
-    @Test
-    @Ignore("CAS does not supported BUFFER_REQUESTS behavior")
-    public void cas_MT_with_behavior_buffer() throws LibMemcachedException, InterruptedException, ExecutionException {
-        connectServer();
-        behaviorCas();
-        client.getBehavior().set(BehaviorType.BUFFER_REQUESTS, true);
-        
-        class T implements Callable<String> {
-            MemcachedStorage s;
-            T(MemcachedStorage s){
-                this.s = s;
-            }
-            public String call() throws Exception {
-                int i = 0;
-                while(true){
-                    if(10 < i++){
-                        throw new RuntimeException("max execution");
-                    }
-                    
-                    MemcachedResult r = s.gets("cas-test");
-                    if(r == null){
-                        s.set("cas-test", "0", 10, 0);
-                        return "0";
-                    }
-                    int val = Integer.parseInt(r.getValue());
-                    String valStr = Integer.toString(val + 1);
-                    ReturnType rt = s.cas("cas-test", valStr, 10, 0, r.getCAS());
-                    if(!ReturnType.SUCCESS.equals(rt)){
-                        continue;
-                    }
-                    return valStr;
+    private static class TestCAS_increment implements Callable<String> {
+        MemcachedStorage s;
+        TestCAS_increment(MemcachedStorage s){
+            this.s = s;
+        }
+        public String call() throws Exception {
+            int i = 0;
+            while(true){
+                if(10 < i++){
+                    throw new RuntimeException("max execution");
                 }
+                
+                MemcachedResult r = s.gets("cas-test");
+                if(r == null){
+                    s.set("cas-test", "0", 10, 0);
+                    return "0";
+                }
+                int val = Integer.parseInt(r.getValue());
+                String valStr = Integer.toString(val + 1);
+                ReturnType rt = s.cas("cas-test", valStr, 10, 0, r.getCAS());
+                if(!ReturnType.SUCCESS.equals(rt)){
+                    continue;
+                }
+                return valStr;
             }
         }
-        
-        List<String> accepts = new ArrayList<String>();
-        List<Callable<String>> tasks = new ArrayList<Callable<String>>();
-        for(int i = 0; i < 50; i++){
-            tasks.add(new T(client.getStorage()));
-            accepts.add(Integer.toString(i));
-        }
-        
-        ExecutorService exec = Executors.newSingleThreadExecutor();
-        List<Future<String>> futures = exec.invokeAll(tasks);
-        for(Future<String> f: futures){
-            String v = f.get();
-            System.out.println(v);
-            Assert.assertTrue(accepts.contains(v));
-            accepts.remove(v);
-        }
-        Assert.assertTrue(accepts.isEmpty());
     }
     
 }
