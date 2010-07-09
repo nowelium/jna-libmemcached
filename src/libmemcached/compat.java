@@ -19,7 +19,7 @@ public interface compat {
             this(0);
         }
         public size_t(long value){
-            super(Native.POINTER_SIZE, value);
+            super(Native.SIZE_T_SIZE, value);
         }
     }
     
@@ -31,7 +31,7 @@ public interface compat {
             this(0);
         }
         public time_t(int value) {
-            super(Native.POINTER_SIZE, value);
+            super(Native.LONG_SIZE, value);
         }
     }
     
