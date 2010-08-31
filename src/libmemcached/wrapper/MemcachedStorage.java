@@ -64,6 +64,14 @@ public class MemcachedStorage {
         return fetchResult();
     }
     
+    public MemcachedResult getsByKey(String masterKey, String key) throws LibMemcachedException {
+        ReturnType rt = getMultiByKey(masterKey, key);
+        if(!ReturnType.SUCCESS.equals(rt)){
+            throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()));
+        }
+        return fetchResult();
+    }
+    
     public String get(String key) throws LibMemcachedException {
         SimpleResult result = getResult(key);
         if(null == result){
