@@ -28,7 +28,7 @@ public class Get extends Function {
         
         final String value = getMemcached().memcached_get(ptr, key, key_length, value_length, flags, error);
         
-        int rc = error.getValue();
+        final int rc = error.getValue();
         if(ReturnType.NOTFOUND.equalValue(rc)){
             return null;
         }
@@ -53,14 +53,14 @@ public class Get extends Function {
             flags,
             error
         );
-        int rc = error.getValue();
+        final int rc = error.getValue();
         if(ReturnType.NOTFOUND.equalValue(rc)){
             return null;
         }
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached_strerror(ptr, rc));
         }
-        String value = result.substring(0, value_length.getValue());
+        final String value = result.substring(0, value_length.getValue());
         return new SimpleResult(key, value, value_length.getValue(), flags.getValue());
     }
     
@@ -75,8 +75,8 @@ public class Get extends Function {
             size[i] = new size_t(keys[i].getBytes().length);
         }
         
-        size_t keys_length = new size_t(length);
-        int rc = getMemcached().memcached_mget(ptr, keys, size, keys_length);
+        final size_t keys_length = new size_t(length);
+        final int rc = getMemcached().memcached_mget(ptr, keys, size, keys_length);
         return ReturnType.get(rc);
     }
     
@@ -91,9 +91,9 @@ public class Get extends Function {
             size[i] = new size_t(keys[i].getBytes().length);
         }
         
-        size_t master_key_kength = new size_t(master_key.getBytes().length);
-        size_t keys_length = new size_t(length);
-        int rc = getMemcached().memcached_mget_by_key(ptr, master_key, master_key_kength, keys, size, keys_length);
+        final size_t master_key_kength = new size_t(master_key.getBytes().length);
+        final size_t keys_length = new size_t(length);
+        final int rc = getMemcached().memcached_mget_by_key(ptr, master_key, master_key_kength, keys, size, keys_length);
         return ReturnType.get(rc);
     }
     
@@ -104,8 +104,8 @@ public class Get extends Function {
     public static memcached_result_st memcached_fetch_result(memcached_st ptr, memcached_result_st result_st) throws LibMemcachedException {
         final IntByReference error = new IntByReference();
         
-        memcached_result_st result = getMemcached().memcached_fetch_result(ptr, result_st, error);
-        int rc = error.getValue();
+        final memcached_result_st result = getMemcached().memcached_fetch_result(ptr, result_st, error);
+        final int rc = error.getValue();
         if(ReturnType.END.equalValue(rc)){
             return null;
         }
@@ -128,7 +128,7 @@ public class Get extends Function {
             flags, error
         );
 
-        int rc = error.getValue();
+        final int rc = error.getValue();
         if(ReturnType.END.equalValue(rc)){
             return null;
         }
@@ -136,16 +136,18 @@ public class Get extends Function {
             throw new LibMemcachedException(memcached_strerror(ptr, rc));
         }
         
-        int keylen = key_length.getValue();
-        int valuelen = value_length.getValue();
-        String key = byteToString(returnKey, 0, keylen);
-        String value = byteToString(result.getBytes(), 0, valuelen);
+        final int keylen = key_length.getValue();
+        final int valuelen = value_length.getValue();
+        final String key = byteToString(returnKey, 0, keylen);
+        final String value = byteToString(result.getBytes(), 0, valuelen);
         return new SimpleResult(key, value, valuelen, flags.getValue());
     }
     
     protected static String byteToString(byte[] bytes, int position, int limit){
         // TODO: this should not be hardcoded to 1024 bytes
-        ByteBuffer buffer = ByteBuffer.allocateDirect(1024);
+        // TODO: allocate or allocateDirect
+        // ByteBuffer buffer = ByteBuffer.allocateDirect(1024);
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
         buffer.put(bytes);
         buffer.position(position);
         buffer.limit(limit);

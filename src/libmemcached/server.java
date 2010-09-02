@@ -1,18 +1,17 @@
 package libmemcached;
 
-import libmemcached.compat.addrinfo;
 import libmemcached.compat.size_t;
-import libmemcached.compat.time_t;
 import libmemcached.memcached.memcached_st;
 import libmemcached.types.memcached_server_function;
 import libmemcached.types.memcached_server_instance_st;
 
 import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
+import com.sun.jna.PointerType;
 import com.sun.jna.ptr.IntByReference;
 
 public interface server {
     
+    /*
     public static class memcached_server_st extends Structure {
         // C type: options
         public options_struct options;
@@ -141,6 +140,11 @@ public interface server {
                 
             }
         }
+    }
+    */
+    
+    public static class memcached_server_st extends PointerType {
+        // ignore
     }
     
     /**

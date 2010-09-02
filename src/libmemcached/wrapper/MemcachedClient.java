@@ -28,14 +28,14 @@ public class MemcachedClient {
     
     protected final MemcachedBehavior behavior = new MemcachedBehavior(this);
     
-    @SuppressWarnings("unused")
-    private final Object finalizer = new Object(){
-        @Override
-        protected void finalize() throws Throwable {
-            memcached_free(memcached_st);
-            super.finalize();
-        }
-    };
+//    @SuppressWarnings("unused")
+//    private final Object finalizer = new Object(){
+//        @Override
+//        protected void finalize() throws Throwable {
+//            memcached_free(memcached_st);
+//            super.finalize();
+//        }
+//    };
     
     public MemcachedClient(){
         this(memcached_create());
@@ -141,6 +141,10 @@ public class MemcachedClient {
     
     public void quit(){
         memcached_quit(memcached_st);
+    }
+    
+    public void free(){
+        memcached_free(memcached_st);
     }
 
 }

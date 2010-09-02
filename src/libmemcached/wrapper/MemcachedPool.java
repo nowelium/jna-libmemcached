@@ -21,14 +21,14 @@ public class MemcachedPool {
     
     protected final memcached_pool_st pool_st;
     
-    @SuppressWarnings("unused")
-    private final Object finalizer = new Object(){
-        @Override
-        protected void finalize() throws Throwable {
-            memcached_pool_destroy(pool_st);
-            super.finalize();
-        }
-    };
+//    @SuppressWarnings("unused")
+//    private final Object finalizer = new Object(){
+//        @Override
+//        protected void finalize() throws Throwable {
+//            memcached_pool_destroy(pool_st);
+//            super.finalize();
+//        }
+//    };
     
     protected MemcachedPool(MemcachedClient memcached, int initial, int max){
         this.memcached = memcached;
@@ -61,6 +61,10 @@ public class MemcachedPool {
     
     public long getBehavior(BehaviorType type) throws LibMemcachedException {
         return memcached_pool_behavior_get(pool_st, type);
+    }
+    
+    public void destroy(){
+        memcached_pool_destroy(pool_st);
     }
 
 }

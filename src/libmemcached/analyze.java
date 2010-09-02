@@ -3,11 +3,12 @@ package libmemcached;
 import libmemcached.memcached.memcached_st;
 import libmemcached.stats.memcached_stat_st;
 
-import com.sun.jna.Structure;
+import com.sun.jna.PointerType;
 import com.sun.jna.ptr.IntByReference;
 
 public interface analyze {
 
+    /*
     public static class memcached_analysis_st extends Structure {
         // C type: memcached_st*
         public memcached_st.ByReference root;
@@ -39,6 +40,11 @@ public interface analyze {
         public static class ByValue extends memcached_analysis_st implements Structure.ByValue {
             
         }
+    }
+    */
+    
+    public static class memcached_analysis_st extends PointerType {
+        // ignore
     }
     
     /**

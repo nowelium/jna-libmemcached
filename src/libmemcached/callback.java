@@ -3,11 +3,12 @@ package libmemcached;
 import libmemcached.memcached.memcached_st;
 
 import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
+import com.sun.jna.PointerType;
 import com.sun.jna.ptr.IntByReference;
 
 public interface callback {
     
+    /*
     public static class memcached_callback_st extends Structure {
         // C type: memcached_execute_fn* in memcached_execute_function
         public Pointer callback;
@@ -27,6 +28,11 @@ public interface callback {
         public static class ByValue extends memcached_callback_st implements Structure.ByValue {
             
         }
+    }
+    */
+    
+    public static class memcached_callback_st extends PointerType {
+        // ignore
     }
     
     /**

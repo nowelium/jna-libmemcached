@@ -13,6 +13,7 @@ public interface types {
     public static class memcached_server_instance_st extends memcached_server_st {
         // alias
     }
+    
     public static class memcached_server_list_st extends memcached_server_st {
         // alias
     }

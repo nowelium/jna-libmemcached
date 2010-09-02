@@ -17,14 +17,14 @@ public class MemcachedServer {
 
     protected final memcached_server_instance_st server_st;
     
-    @SuppressWarnings("unused")
-    private final Object finalizer = new Object(){
-        @Override
-        protected void finalize() throws Throwable {
-            memcached_server_free(server_st);
-            super.finalize();
-        }
-    };
+//    @SuppressWarnings("unused")
+//    private final Object finalizer = new Object(){
+//        @Override
+//        protected void finalize() throws Throwable {
+//            memcached_server_free(server_st);
+//            super.finalize();
+//        }
+//    };
     
     protected MemcachedServer(MemcachedClient memcached, String key) throws LibMemcachedException {
         this(memcached, memcached_server_by_key(memcached.memcached_st, key));
@@ -59,6 +59,10 @@ public class MemcachedServer {
     
     public void quit(boolean io_death){
         memcached_quit_server(server_st, io_death);
+    }
+    
+    public void free(){
+        memcached_server_free(server_st);
     }
     
 }

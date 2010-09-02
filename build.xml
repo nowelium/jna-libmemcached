@@ -15,7 +15,7 @@
   <property name="build.complete" value="false" />
   
   <property name="jna.libmemcached.name" value="libmemcached" />
-  <property name="jna.libmemcached.version" value="0.01" />
+  <property name="jna.libmemcached.version" value="0.02" />
   <property name="jna.libmemcached.package.zip" value="${jna.libmemcached.name}-${jna.libmemcached.version}.zip" />
   <property name="jna.libmemcached.package.dependencies.zip" value="${jna.libmemcached.name}-${jna.libmemcached.version}-with-dependencies.zip" />
   <property name="jna.libmemcached.jar" value="${jna.libmemcached.name}-${jna.libmemcached.version}.jar" />

@@ -3,11 +3,11 @@ package libmemcached;
 import libmemcached.compat.sasl_callback_t;
 import libmemcached.memcached.memcached_st;
 
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
+import com.sun.jna.PointerType;
 
 public interface sasl {
     
+    /*
     public static class memcached_sasl_st extends Structure {
         // C type: IF LIBMEMCACHED_WITH_SASL_SUPPORT THEN const sasl_callback_t* ELSE const void *
         public Pointer callbacks;
@@ -25,6 +25,11 @@ public interface sasl {
         public static class ByValue extends memcached_sasl_st implements Structure.ByValue {
             
         }
+    }
+    */
+    
+    public static class memcached_sasl_st extends PointerType {
+        // ignore
     }
     
     /**

@@ -22,16 +22,16 @@ public class MemcachedServerList {
     
     protected memcached_server_list_st server_st = null;
 
-    @SuppressWarnings("unused")
-    private final Object finalizer = new Object(){
-        @Override
-        protected void finalize() throws Throwable {
-            if(null != server_st){
-                memcached_server_list_free(server_st);
-            }
-            super.finalize();
-        }
-    };
+//    @SuppressWarnings("unused")
+//    private final Object finalizer = new Object(){
+//        @Override
+//        protected void finalize() throws Throwable {
+//            if(null != server_st){
+//                memcached_server_list_free(server_st);
+//            }
+//            super.finalize();
+//        }
+//    };
     
     protected MemcachedServerList(MemcachedClient memcached){
         this.memcached = memcached;
@@ -87,6 +87,12 @@ public class MemcachedServerList {
             return memcached_server_push(memcached.memcached_st, server_st);
         } finally {
             lock.unlock();
+        }
+    }
+    
+    public void free(){
+        if(null != server_st){
+            memcached_server_list_free(server_st);
         }
     }
 

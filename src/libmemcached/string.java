@@ -1,13 +1,10 @@
 package libmemcached;
 
-import libmemcached.compat.size_t;
-import libmemcached.memcached.memcached_st;
-
-import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
+import com.sun.jna.PointerType;
 
 public interface string {
     
+    /*
     public static class memcached_string_st extends Structure {
         // C type: char*
         public Pointer end;
@@ -50,6 +47,11 @@ public interface string {
                 
             }
         }
+    }
+    */
+    
+    public static class memcached_string_st extends PointerType {
+        // ignore
     }
 
 }

@@ -5,7 +5,7 @@ import libmemcached.wrapper.type.ReturnType;
 
 public class FlushBuffers extends Function {
     public static ReturnType memcached_flush_buffers(memcached_st mem){
-        int rc = getMemcached().memcached_flush_buffers(mem);
+        final int rc = getMemcached().memcached_flush_buffers(mem);
         return ReturnType.get(rc);
     }
 }

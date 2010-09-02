@@ -5,7 +5,6 @@ import com.sun.jna.IntegerType;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 import com.sun.jna.PointerType;
-import com.sun.jna.Structure;
 
 public interface compat {
     
@@ -26,7 +25,6 @@ public interface compat {
     // alias
     public static class time_t extends IntegerType {
         private static final long serialVersionUID = 1L;
-        public int value;
         public time_t(){
             this(0);
         }
@@ -46,6 +44,7 @@ public interface compat {
     }
     
     // libhashkit/hashkit.h
+    /*
     public static class hashkit_st extends Structure {
         public hashkit_function_st base_hash;
         public hashkit_function_st distribution_hash;
@@ -114,6 +113,11 @@ public interface compat {
                 
             }
         }
+    }
+    */
+    
+    public static class hashkit_st extends PointerType {
+        // ignore
     }
     
     public static interface sasl_callback_t extends Callback {

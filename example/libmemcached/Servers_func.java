@@ -12,7 +12,7 @@ public class Servers_func {
         
         com.sun.jna.ptr.IntByReference err = new com.sun.jna.ptr.IntByReference();
         ss = memcached.memcached_server_list_append(ss, "localhost", 11211, err);
-        System.out.println(new String(ss.hostname));
+        //System.out.println(new String(ss.hostname));
         System.out.println(err.getValue());
         ss = memcached.memcached_server_list_append(ss, "localhost", 11212, err);
         System.out.println(err.getValue());

@@ -2,11 +2,12 @@ package libmemcached;
 
 import libmemcached.memcached.memcached_st;
 
-import com.sun.jna.Structure;
+import com.sun.jna.PointerType;
 import com.sun.jna.ptr.IntByReference;
 
 public interface stats {
     
+    /*
     public static class memcached_stat_st extends Structure {
         // C type: uint32_t
         public int connection_structures;
@@ -70,6 +71,11 @@ public interface stats {
         public static class ByValue extends memcached_stat_st implements Structure.ByValue {
 
         }
+    }
+    */
+    
+    public static class memcached_stat_st extends PointerType {
+        // ignore
     }
     
     /**

@@ -12,9 +12,9 @@ import com.sun.jna.ptr.IntByReference;
 public class Analyze extends Function {
     
     public static memcached_analysis_st memcached_analyze(memcached_st ptr, memcached_stat_st memc_stat) throws LibMemcachedException {
-        IntByReference error = new IntByReference();
-        memcached_analysis_st analysis_st = getMemcached().memcached_analyze(ptr, memc_stat, error);
-        int rc = error.getValue();
+        final IntByReference error = new IntByReference();
+        final memcached_analysis_st analysis_st = getMemcached().memcached_analyze(ptr, memc_stat, error);
+        final int rc = error.getValue();
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached_strerror(ptr, rc));
         }

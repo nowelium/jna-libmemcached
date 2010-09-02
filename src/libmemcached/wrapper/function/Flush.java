@@ -7,8 +7,8 @@ import libmemcached.wrapper.type.ReturnType;
 public class Flush extends Function {
     
     public static ReturnType memcached_flush(memcached_st ptr, int expiration){
-        time_t expire = new time_t(expiration);
-        int rc = getMemcached().memcached_flush(ptr, expire);
+        final time_t expire = new time_t(expiration);
+        final int rc = getMemcached().memcached_flush(ptr, expire);
         return ReturnType.get(rc);
     }
 

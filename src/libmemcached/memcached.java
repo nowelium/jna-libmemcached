@@ -1,12 +1,9 @@
 package libmemcached;
 
-import libmemcached.compat.hashkit_st;
-import libmemcached.compat.size_t;
-import libmemcached.compat.time_t;
 import libmemcached.util.pool;
 
 import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
+import com.sun.jna.PointerType;
 
 public interface memcached extends
     visibility,
@@ -39,6 +36,7 @@ public interface memcached extends
     sasl,
     pool {
     
+    /*
     public static class memcached_st extends Structure {
         // C type: state
         public state_struct state;
@@ -239,7 +237,9 @@ public interface memcached extends
             };
         }
     }
+    */
     
+    /*
     public static class memcached_continuum_item_st extends Structure {
         // C type: uint32_t
         public int index;
@@ -257,6 +257,15 @@ public interface memcached extends
         public static class ByValue extends memcached_continuum_item_st implements Structure.ByValue {
             
         }
+    }
+    */
+
+    public static class memcached_st extends PointerType {
+        // ignore
+    }
+    
+    public static class memcached_continuum_item_st extends PointerType {
+        // ignore
     }
     
     /**

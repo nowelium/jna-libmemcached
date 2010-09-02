@@ -9,17 +9,21 @@ public class MemcachedAnalyze {
 
     protected final memcached_analysis_st analysis_st;
     
-    @SuppressWarnings("unused")
-    private final Object finalizer = new Object(){
-        @Override
-        protected void finalize() throws Throwable {
-            memcached_analyze_free(analysis_st);
-            super.finalize();
-        }
-    };
+//    @SuppressWarnings("unused")
+//    private final Object finalizer = new Object(){
+//        @Override
+//        protected void finalize() throws Throwable {
+//            memcached_analyze_free(analysis_st);
+//            super.finalize();
+//        }
+//    };
     
     protected MemcachedAnalyze(MemcachedClient memcached, MemcachedStats stats) throws LibMemcachedException {
         this.analysis_st = memcached_analyze(memcached.memcached_st, stats.stat_st);
+    }
+    
+    public void free(){
+        memcached_analyze_free(analysis_st);
     }
     
 }

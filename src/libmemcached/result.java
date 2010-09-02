@@ -3,12 +3,12 @@ package libmemcached;
 import libmemcached.compat.size_t;
 import libmemcached.compat.time_t;
 import libmemcached.memcached.memcached_st;
-import libmemcached.string.memcached_string_st;
 
-import com.sun.jna.Structure;
+import com.sun.jna.PointerType;
 
 public interface result {
     
+    /*
     public static class memcached_result_st extends Structure {
         // C type: uint32_t
         public int item_flags;
@@ -57,6 +57,11 @@ public interface result {
 
             }
         }
+    }
+    */
+    
+    public static class memcached_result_st extends PointerType {
+        // ignore
     }
     
     /**
