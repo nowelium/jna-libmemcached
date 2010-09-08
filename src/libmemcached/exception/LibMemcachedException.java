@@ -6,7 +6,7 @@ public class LibMemcachedException extends Exception {
 
     private static final long serialVersionUID = 1L;
     
-    private ReturnType rt;
+    private final ReturnType rt;
     
     public LibMemcachedException(String message){
         this(message, null);

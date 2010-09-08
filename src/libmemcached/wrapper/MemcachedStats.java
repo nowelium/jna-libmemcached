@@ -1,18 +1,23 @@
 package libmemcached.wrapper;
 
-import static libmemcached.wrapper.function.Stats.memcached_stat;
 import static libmemcached.wrapper.function.Stats.memcached_stat_free;
 import static libmemcached.wrapper.function.Stats.memcached_stat_get_keys;
 import static libmemcached.wrapper.function.Stats.memcached_stat_get_value;
 import static libmemcached.wrapper.function.Stats.memcached_stat_servername;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import libmemcached.exception.LibMemcachedException;
+import libmemcached.memcached.memcached_st;
 import libmemcached.stats.memcached_stat_st;
 import libmemcached.wrapper.type.ReturnType;
 
 public class MemcachedStats {
-
-    protected final MemcachedClient memcached;
     
+    protected final AtomicBoolean free = new AtomicBoolean(false);
+    
+    protected final memcached_st memcached_st;
+
     protected final memcached_stat_st stat_st;
 
 //    @SuppressWarnings("unused")
@@ -24,9 +29,9 @@ public class MemcachedStats {
 //        }
 //    };
     
-    protected MemcachedStats(MemcachedClient memcached, String args) throws LibMemcachedException {
-        this.memcached = memcached;
-        this.stat_st = memcached_stat(memcached.memcached_st, args);
+    protected MemcachedStats(memcached_st memcached_st, memcached_stat_st stat_st) {
+        this.memcached_st = memcached_st;
+        this.stat_st = stat_st;
     }
     
     public ReturnType serverName(String args, String hostname, int port){
@@ -34,14 +39,17 @@ public class MemcachedStats {
     }
 
     public String getValue(String key) throws LibMemcachedException {
-        return memcached_stat_get_value(memcached.memcached_st, stat_st, key);
+        return memcached_stat_get_value(memcached_st, stat_st, key);
     }
     
     public String[] getKeys() throws LibMemcachedException {
-        return memcached_stat_get_keys(memcached.memcached_st, stat_st);
+        return memcached_stat_get_keys(memcached_st, stat_st);
     }
     
     public void free(){
-        memcached_stat_free(memcached.memcached_st, stat_st);
+        if(free.getAndSet(true)){
+            return ;
+        }
+        memcached_stat_free(memcached_st, stat_st);
     }
 }

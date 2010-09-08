@@ -31,12 +31,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import libmemcached.exception.LibMemcachedException;
+import libmemcached.memcached.memcached_st;
 import libmemcached.result.memcached_result_st;
 import libmemcached.wrapper.type.ReturnType;
 
 public class MemcachedStorage {
-    
-    protected final MemcachedClient memcached;
     
     protected final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     
@@ -44,36 +43,38 @@ public class MemcachedStorage {
     
     protected final Lock readLock = lock.readLock();
     
-    protected MemcachedStorage(MemcachedClient memcached){
-        this.memcached = memcached;
+    protected final memcached_st memcached_st;
+    
+    protected MemcachedStorage(memcached_st memcached_st){
+        this.memcached_st = memcached_st;
     }
     
     public SimpleResult getResult(String key) throws LibMemcachedException {
-        return memcached_get(memcached.memcached_st, key);
+        return memcached_get(memcached_st, key);
     }
     
     public SimpleResult getResultByKey(String masterKey, String key) throws LibMemcachedException {
-        return memcached_get_by_key(memcached.memcached_st, masterKey, key);
+        return memcached_get_by_key(memcached_st, masterKey, key);
     }
     
     public MemcachedResult gets(String key) throws LibMemcachedException {
-        ReturnType rt = getMulti(key);
+        final ReturnType rt = getMulti(key);
         if(!ReturnType.SUCCESS.equals(rt)){
-            throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()));
+            throw new LibMemcachedException(memcached_strerror(memcached_st, rt.getValue()));
         }
         return fetchResult();
     }
     
     public MemcachedResult getsByKey(String masterKey, String key) throws LibMemcachedException {
-        ReturnType rt = getMultiByKey(masterKey, key);
+        final ReturnType rt = getMultiByKey(masterKey, key);
         if(!ReturnType.SUCCESS.equals(rt)){
-            throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()));
+            throw new LibMemcachedException(memcached_strerror(memcached_st, rt.getValue()));
         }
         return fetchResult();
     }
     
     public String get(String key) throws LibMemcachedException {
-        SimpleResult result = getResult(key);
+        final SimpleResult result = getResult(key);
         if(null == result){
             return null;
         }
@@ -81,7 +82,7 @@ public class MemcachedStorage {
     }
     
     public String getByKey(String masterKey, String key) throws LibMemcachedException {
-        SimpleResult result = getResultByKey(masterKey, key);
+        final SimpleResult result = getResultByKey(masterKey, key);
         if(null == result){
             return null;
         }
@@ -89,19 +90,19 @@ public class MemcachedStorage {
     }
     
     public ReturnType getMulti(String...keys) {
-        return memcached_mget(memcached.memcached_st, keys);
+        return memcached_mget(memcached_st, keys);
     }
     
     public ReturnType getMultiByKey(String masterKey, String...keys) {
-        return memcached_mget_by_key(memcached.memcached_st, masterKey, keys);
+        return memcached_mget_by_key(memcached_st, masterKey, keys);
     }
     
     public void getMulti(Fetcher fetcher, String...keys) throws LibMemcachedException {
         readLock.lock();
         try {
-            ReturnType rt = memcached_mget(memcached.memcached_st, keys);
+            final ReturnType rt = memcached_mget(memcached_st, keys);
             if(!ReturnType.SUCCESS.equals(rt)){
-                throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()), rt);
+                throw new LibMemcachedException(memcached_strerror(memcached_st, rt.getValue()), rt);
             }
             
             fetch(fetcher);
@@ -113,9 +114,9 @@ public class MemcachedStorage {
     public void getMultiByKey(Fetcher fetcher, String masterKey, String...keys) throws LibMemcachedException {
         readLock.lock();
         try {
-            ReturnType rt = memcached_mget_by_key(memcached.memcached_st, masterKey, keys);
+            final ReturnType rt = memcached_mget_by_key(memcached_st, masterKey, keys);
             if(!ReturnType.SUCCESS.equals(rt)){
-                throw new LibMemcachedException(memcached_strerror(memcached.memcached_st, rt.getValue()), rt);
+                throw new LibMemcachedException(memcached_strerror(memcached_st, rt.getValue()), rt);
             }
             
             fetch(fetcher);
@@ -125,27 +126,27 @@ public class MemcachedStorage {
     }
     
     public SimpleResult fetch() throws LibMemcachedException {
-        return memcached_fetch(memcached.memcached_st);
+        return memcached_fetch(memcached_st);
     }
     
     public MemcachedResult fetchResult() throws LibMemcachedException {
-        memcached_result_st result = memcached_fetch_result(memcached.memcached_st);
+        final memcached_result_st result = memcached_fetch_result(memcached_st);
         if(null == result){
             return null;
         }
-        return new MemcachedResult(memcached, result);
+        return new MemcachedResult(result);
     }
     
     public MemcachedResult fetchResult(MemcachedResult parent) throws LibMemcachedException {
-        memcached_result_st result = memcached_fetch_result(memcached.memcached_st, parent.result_st);
+        final memcached_result_st result = memcached_fetch_result(memcached_st, parent.result_st);
         if(null == result){
             return null;
         }
-        return new MemcachedResult(memcached, result);
+        return new MemcachedResult(result);
     }
     
     public String fetchString() throws LibMemcachedException {
-        SimpleResult result = fetch();
+        final SimpleResult result = fetch();
         if(null == result){
             return null;
         }
@@ -154,85 +155,85 @@ public class MemcachedStorage {
     
     public void fetch(Fetcher fetcher) throws LibMemcachedException {
         SimpleResult result = null;
-        while((result = memcached_fetch(memcached.memcached_st)) != null){
+        while((result = memcached_fetch(memcached_st)) != null){
             fetcher.fetch(result);
         }
     }
     
     public ReturnType delete(String key, int expiration){
-        return memcached_delete(memcached.memcached_st, key, expiration);
+        return memcached_delete(memcached_st, key, expiration);
     }
     
     public ReturnType deleteByKey(String masterKey, String key, int expiration){
-        return memcached_delete_by_key(memcached.memcached_st, masterKey, key, expiration);
+        return memcached_delete_by_key(memcached_st, masterKey, key, expiration);
     }
     
     public ReturnType increment(String key, int offset, long value){
-        return memcached_increment(memcached.memcached_st, key, offset, value);
+        return memcached_increment(memcached_st, key, offset, value);
     }
     
     public ReturnType incrementWithInitial(String key, int offset, long initial, int expiration, long value){
-        return memcached_increment_with_initial(memcached.memcached_st, key, offset, initial, expiration, value);
+        return memcached_increment_with_initial(memcached_st, key, offset, initial, expiration, value);
     }
     
     public ReturnType decrement(String key, int offset, long value){
-        return memcached_decrement(memcached.memcached_st, key, offset, value);
+        return memcached_decrement(memcached_st, key, offset, value);
     }
     
     public ReturnType decrementWithInitial(String key, int offset, long initial, int expiration, long value){
-        return memcached_decrement_with_initial(memcached.memcached_st, key, offset, initial, expiration, value);
+        return memcached_decrement_with_initial(memcached_st, key, offset, initial, expiration, value);
     }
     
     public ReturnType set(String key, String value, int expiration, int flags){
-        return memcached_set(memcached.memcached_st, key, value, expiration, flags);
+        return memcached_set(memcached_st, key, value, expiration, flags);
     }
     
     public ReturnType setByKey(String masterKey, String key, String value, int expiration, int flags){
-        return memcached_set_by_key(memcached.memcached_st, masterKey, key, value, expiration, flags);
+        return memcached_set_by_key(memcached_st, masterKey, key, value, expiration, flags);
     }
     
     public ReturnType add(String key, String value, int expiration, int flags){
-        return memcached_add(memcached.memcached_st, key, value, expiration, flags);
+        return memcached_add(memcached_st, key, value, expiration, flags);
     }
     
     public ReturnType addByKey(String masterKey, String key, String value, int expiration, int flags){
-        return memcached_add_by_key(memcached.memcached_st, masterKey, key, value, expiration, flags);
+        return memcached_add_by_key(memcached_st, masterKey, key, value, expiration, flags);
     }
     
     public ReturnType replace(String key, String value, int expiration, int flags){
-        return memcached_replace(memcached.memcached_st, key, value, expiration, flags);
+        return memcached_replace(memcached_st, key, value, expiration, flags);
     }
     
     public ReturnType replaceByKey(String masterKey, String key, String value, int expiration, int flags){
-        return memcached_replace_by_key(memcached.memcached_st, masterKey, key, value, expiration, flags);
+        return memcached_replace_by_key(memcached_st, masterKey, key, value, expiration, flags);
     }
     
     public ReturnType append(String key, String value, int expiration, int flags){
-        return memcached_append(memcached.memcached_st, key, value, expiration, flags);
+        return memcached_append(memcached_st, key, value, expiration, flags);
     }
     
     public ReturnType appendByKey(String masterKey, String key, String value, int expiration, int flags){
-        return memcached_append_by_key(memcached.memcached_st, masterKey, key, value, expiration, flags);
+        return memcached_append_by_key(memcached_st, masterKey, key, value, expiration, flags);
     }
     
     public ReturnType prepend(String key, String value, int expiration, int flags){
-        return memcached_prepend(memcached.memcached_st, key, value, expiration, flags);
+        return memcached_prepend(memcached_st, key, value, expiration, flags);
     }
     
     public ReturnType prependByKey(String masterKey, String key, String value, int expiration, int flags){
-        return memcached_prepend_by_key(memcached.memcached_st, masterKey, key, value, expiration, flags);
+        return memcached_prepend_by_key(memcached_st, masterKey, key, value, expiration, flags);
     }
     
     public ReturnType cas(String key, String value, int expiration, int flags, long cas){
-        return memcached_cas(memcached.memcached_st, key, value, expiration, flags, cas);
+        return memcached_cas(memcached_st, key, value, expiration, flags, cas);
     }
     
     public ReturnType casByKey(String masterKey, String key, String value, int expiration, int flags, long cas){
-        return memcached_cas_by_key(memcached.memcached_st, masterKey, key, value, expiration, flags, cas);
+        return memcached_cas_by_key(memcached_st, masterKey, key, value, expiration, flags, cas);
     }
     
     public ReturnType flush(int expiration){
-        return memcached_flush(memcached.memcached_st, expiration);
+        return memcached_flush(memcached_st, expiration);
     }
 
 }

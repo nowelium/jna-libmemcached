@@ -2,13 +2,13 @@ package libmemcached.wrapper;
 
 public class SimpleResult {
     
-    protected String key;
+    protected final String key;
     
-    protected String value;
+    protected final String value;
     
-    protected long length;
+    protected final long length;
     
-    protected int flags;
+    protected final int flags;
     
     public SimpleResult(String key, String value, long length, int flags){
         this.key = key;

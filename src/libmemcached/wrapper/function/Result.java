@@ -29,7 +29,7 @@ public class Result extends Function {
     }
     
     public static long memcached_result_key_length(memcached_result_st self){
-        size_t size = getMemcached().memcached_result_key_length(self);
+        final size_t size = getMemcached().memcached_result_key_length(self);
         return size.longValue();
     }
     
@@ -38,7 +38,7 @@ public class Result extends Function {
     }
     
     public static long memcached_result_length(memcached_result_st self){
-        size_t size = getMemcached().memcached_result_length(self);
+        final size_t size = getMemcached().memcached_result_length(self);
         return size.longValue();
     }
     
@@ -51,8 +51,8 @@ public class Result extends Function {
     }
     
     public static ReturnType memcached_result_set_value(memcached_result_st ptr, String value){
-        size_t length = new size_t(value.getBytes().length);
-        int rc = getMemcached().memcached_result_set_value(ptr, value, length);
+        final size_t length = new size_t(value.getBytes().length);
+        final int rc = getMemcached().memcached_result_set_value(ptr, value, length);
         return ReturnType.get(rc);
     }
     
@@ -61,7 +61,7 @@ public class Result extends Function {
     }
     
     public static void memcached_result_set_expiration(memcached_result_st self, int expiration){
-        time_t expire = new time_t(expiration);
+        final time_t expire = new time_t(expiration);
         getMemcached().memcached_result_set_expiration(self, expire);
     }
 

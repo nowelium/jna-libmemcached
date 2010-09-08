@@ -80,46 +80,58 @@ public class Performance {
         }
         {
             MemcachedClient client = new MemcachedClient();
-            client.getServerList().parse("localhost:11211").push();
-            for(BehaviorType type: behaviors){
-                client.getBehavior().set(type, 1);
+            try {
+                client.getServerList().parse("localhost:11211").push();
+                for(BehaviorType type: behaviors){
+                    client.getBehavior().set(type, 1);
+                }
+    
+                long[] times = new long[count];
+                for(int i = 0; i < count; ++i){
+                    times[i] = get_multi_without_fetcher_behavior_connection(client);
+                }
+                bench("get_multi_without_fetcher_behavior_connection", times);
+            } finally {
+                client.free();
             }
-
-            long[] times = new long[count];
-            for(int i = 0; i < count; ++i){
-                times[i] = get_multi_without_fetcher_behavior_connection(client);
-            }
-            bench("get_multi_without_fetcher_behavior_connection", times);
         }
         {
             MemcachedClient client = new MemcachedClient();
-            client.getServerList().parse("localhost:11211").push();
-            
-            MemcachedPool pool = client.createPool(count, count);
-            for(BehaviorType type: behaviors){
-                pool.setBehavior(type, 1);
+            try {
+                client.getServerList().parse("localhost:11211").push();
+                
+                MemcachedPool pool = client.createPool(count, count);
+                for(BehaviorType type: behaviors){
+                    pool.setBehavior(type, 1);
+                }
+                
+                long[] times = new long[count];
+                for(int i = 0; i < count; ++i){
+                    times[i] = get_multi_without_fetcher_behavior_pool(pool);
+                }
+                bench("get_multi_without_fetcher_behavior_pool", times);
+            } finally {
+                client.free();
             }
-            
-            long[] times = new long[count];
-            for(int i = 0; i < count; ++i){
-                times[i] = get_multi_without_fetcher_behavior_pool(pool);
-            }
-            bench("get_multi_without_fetcher_behavior_pool", times);
         }
         {
             MemcachedClient client = new MemcachedClient();
-            client.getServerList().parse("localhost:11211").push();
-            
-            MemcachedPool pool = client.createPool(count, count);
-            for(BehaviorType type: behaviors){
-                pool.setBehavior(type, 1);
+            try {
+                client.getServerList().parse("localhost:11211").push();
+                
+                MemcachedPool pool = client.createPool(count, count);
+                for(BehaviorType type: behaviors){
+                    pool.setBehavior(type, 1);
+                }
+                
+                long[] times = new long[count];
+                for(int i = 0; i < count; ++i){
+                    times[i] = get_multi_without_fetcher_behavior_pool_nonblock(pool);
+                }
+                bench("get_multi_without_fetcher_behavior_pool_nonblock", times);
+            } finally {
+                client.free();
             }
-            
-            long[] times = new long[count];
-            for(int i = 0; i < count; ++i){
-                times[i] = get_multi_without_fetcher_behavior_pool_nonblock(pool);
-            }
-            bench("get_multi_without_fetcher_behavior_pool_nonblock", times);
         }
     }
     
@@ -140,31 +152,39 @@ public class Performance {
         long elapsed = System.currentTimeMillis();
         
         MemcachedClient client = new MemcachedClient();
-        client.getServerList().parse("localhost:11211").push();
-        
-        MemcachedStorage storage = client.getStorage();
-        storage.getMulti(new Fetcher(){
-            public void fetch(SimpleResult result) {
-                // hoge
-            }
-        }, keys);
-        
-        return System.currentTimeMillis() - elapsed;
+        try {
+            client.getServerList().parse("localhost:11211").push();
+            
+            MemcachedStorage storage = client.getStorage();
+            storage.getMulti(new Fetcher(){
+                public void fetch(SimpleResult result) {
+                    // hoge
+                }
+            }, keys);
+            
+            return System.currentTimeMillis() - elapsed;
+        } finally {
+            client.free();
+        }
     }
     
     public static long get_multi_without_fetcher() throws LibMemcachedException {
         long elapsed = System.currentTimeMillis();
         
         MemcachedClient client = new MemcachedClient();
-        client.getServerList().parse("localhost:11211").push();
-        
-        MemcachedStorage storage = client.getStorage();
-        storage.getMulti(keys);
-        while(storage.fetch() != null){
-            // hoge
+        try {
+            client.getServerList().parse("localhost:11211").push();
+            
+            MemcachedStorage storage = client.getStorage();
+            storage.getMulti(keys);
+            while(storage.fetch() != null){
+                // hoge
+            }
+            
+            return System.currentTimeMillis() - elapsed;
+        } finally {
+            client.free();
         }
-        
-        return System.currentTimeMillis() - elapsed;
     }
     
     public static long get_multi_without_fetcher_connection(MemcachedClient client) throws LibMemcachedException {
@@ -183,18 +203,22 @@ public class Performance {
         long elapsed = System.currentTimeMillis();
         
         MemcachedClient client = new MemcachedClient();
-        client.getServerList().parse("localhost:11211").push();
-        for(BehaviorType type: types){
-            client.getBehavior().set(type, 1);
+        try {
+            client.getServerList().parse("localhost:11211").push();
+            for(BehaviorType type: types){
+                client.getBehavior().set(type, 1);
+            }
+            
+            MemcachedStorage storage = client.getStorage();
+            storage.getMulti(keys);
+            while(storage.fetch() != null){
+                // hoge
+            }
+            
+            return System.currentTimeMillis() - elapsed;
+        } finally {
+            client.free();
         }
-        
-        MemcachedStorage storage = client.getStorage();
-        storage.getMulti(keys);
-        while(storage.fetch() != null){
-            // hoge
-        }
-        
-        return System.currentTimeMillis() - elapsed;
     }
     
     public static long get_multi_without_fetcher_behavior_connection(MemcachedClient client) throws LibMemcachedException {
@@ -213,28 +237,36 @@ public class Performance {
         long elapsed = System.currentTimeMillis();
         
         MemcachedClient client = pool.pop(true);
-        MemcachedStorage storage = client.getStorage();
-        storage.getMulti(keys);
-        while(storage.fetch() != null){
-            // hoge
+        try {
+            MemcachedStorage storage = client.getStorage();
+            storage.getMulti(keys);
+            while(storage.fetch() != null){
+                // hoge
+            }
+            //pool.push(client);
+            
+            return System.currentTimeMillis() - elapsed;
+        } finally {
+            client.free();
         }
-        //pool.push(client);
-        
-        return System.currentTimeMillis() - elapsed;
     }
     
     public static long get_multi_without_fetcher_behavior_pool_nonblock(MemcachedPool pool) throws LibMemcachedException, MaximumPoolException {
         long elapsed = System.currentTimeMillis();
         
         MemcachedClient client = pool.pop(false);
-        MemcachedStorage storage = client.getStorage();
-        storage.getMulti(keys);
-        while(storage.fetch() != null){
-            // hoge
+        try {
+            MemcachedStorage storage = client.getStorage();
+            storage.getMulti(keys);
+            while(storage.fetch() != null){
+                // hoge
+            }
+            //pool.push(client);
+            
+            return System.currentTimeMillis() - elapsed;
+        } finally {
+            client.free();
         }
-        //pool.push(client);
-        
-        return System.currentTimeMillis() - elapsed;
     }
     
 }

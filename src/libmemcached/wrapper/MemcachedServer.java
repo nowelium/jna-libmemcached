@@ -1,20 +1,20 @@
 package libmemcached.wrapper;
 
 import static libmemcached.wrapper.function.Quit.memcached_quit_server;
-import static libmemcached.wrapper.function.Server.memcached_server_by_key;
-import static libmemcached.wrapper.function.Server.memcached_server_clone;
 import static libmemcached.wrapper.function.Server.memcached_server_error;
 import static libmemcached.wrapper.function.Server.memcached_server_free;
 import static libmemcached.wrapper.function.Server.memcached_server_name;
 import static libmemcached.wrapper.function.Server.memcached_server_port;
 import static libmemcached.wrapper.function.Server.memcached_server_response_count;
-import libmemcached.exception.LibMemcachedException;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import libmemcached.types.memcached_server_instance_st;
 
 public class MemcachedServer {
     
-    protected final MemcachedClient memcached;
-
+    protected final AtomicBoolean free = new AtomicBoolean(false);
+    
     protected final memcached_server_instance_st server_st;
     
 //    @SuppressWarnings("unused")
@@ -26,20 +26,15 @@ public class MemcachedServer {
 //        }
 //    };
     
-    protected MemcachedServer(MemcachedClient memcached, String key) throws LibMemcachedException {
-        this(memcached, memcached_server_by_key(memcached.memcached_st, key));
-    }
-    
-    protected MemcachedServer(MemcachedClient memcached, memcached_server_instance_st server_st){
-        this.memcached = memcached;
+    protected MemcachedServer(memcached_server_instance_st server_st){
         this.server_st = server_st;
     }
     
-    @Override
-    protected MemcachedServer clone() throws CloneNotSupportedException {
-        memcached_server_instance_st new_server_st = memcached_server_clone(null, server_st);
-        return new MemcachedServer(memcached, new_server_st);
-    }
+//    @Override
+//    protected MemcachedServer clone() throws CloneNotSupportedException {
+//        memcached_server_instance_st new_server_st = memcached_server_clone(null, server_st);
+//        return new MemcachedServer(memcached_st, new_server_st);
+//    }
     
     public int getResponseCount(){
         return memcached_server_response_count(server_st);
@@ -62,6 +57,9 @@ public class MemcachedServer {
     }
     
     public void free(){
+        if(free.getAndSet(true)){
+            return ;
+        }
         memcached_server_free(server_st);
     }
     

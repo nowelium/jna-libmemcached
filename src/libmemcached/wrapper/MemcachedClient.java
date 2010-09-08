@@ -1,8 +1,10 @@
 package libmemcached.wrapper;
 
+import static libmemcached.wrapper.function.Analyze.memcached_analyze;
 import static libmemcached.wrapper.function.Memcached.memcached_clone;
 import static libmemcached.wrapper.function.Memcached.memcached_create;
 import static libmemcached.wrapper.function.Memcached.memcached_free;
+import static libmemcached.wrapper.function.Pool.memcached_pool_create;
 import static libmemcached.wrapper.function.Quit.memcached_quit;
 import static libmemcached.wrapper.function.Server.memcached_server_add;
 import static libmemcached.wrapper.function.Server.memcached_server_add_udp;
@@ -10,23 +12,31 @@ import static libmemcached.wrapper.function.Server.memcached_server_add_udp_with
 import static libmemcached.wrapper.function.Server.memcached_server_add_unix_socket;
 import static libmemcached.wrapper.function.Server.memcached_server_add_unix_socket_with_weight;
 import static libmemcached.wrapper.function.Server.memcached_server_add_with_weight;
+import static libmemcached.wrapper.function.Server.memcached_server_by_key;
+import static libmemcached.wrapper.function.Stats.memcached_stat;
 import static libmemcached.wrapper.function.StrError.memcached_strerror;
 import static libmemcached.wrapper.function.Verbosity.memcached_verbosity;
 import static libmemcached.wrapper.function.Version.memcached_lib_version;
 import static libmemcached.wrapper.function.Version.memcached_version;
+import static libmemcached.wrapper.function.Result.memcached_result_create;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import libmemcached.exception.LibMemcachedException;
 import libmemcached.memcached.memcached_st;
 import libmemcached.wrapper.type.ReturnType;
 
 public class MemcachedClient {
     
+    protected final AtomicBoolean free = new AtomicBoolean(false);
+    
     protected final memcached_st memcached_st;
     
-    protected final MemcachedServerList serverList = new MemcachedServerList(this);
+    protected final MemcachedServerList serverList;
     
-    protected final MemcachedStorage storage = new MemcachedStorage(this);
+    protected final MemcachedStorage storage;
     
-    protected final MemcachedBehavior behavior = new MemcachedBehavior(this);
+    protected final MemcachedBehavior behavior;
     
 //    @SuppressWarnings("unused")
 //    private final Object finalizer = new Object(){
@@ -41,25 +51,27 @@ public class MemcachedClient {
         this(memcached_create());
     }
     
-    public MemcachedClient(MemcachedClient memcached){
-        this(memcached.memcached_st);
+    public MemcachedClient(MemcachedClient memcached) throws CloneNotSupportedException {
+        this(memcached.clone().memcached_st);
     }
     
     private MemcachedClient(memcached_st memcached_st){
         this.memcached_st = memcached_st;
+        this.serverList = new MemcachedServerList(memcached_st);
+        this.storage = new MemcachedStorage(memcached_st);
+        this.behavior = new MemcachedBehavior(memcached_st);
     }
 
     @Override
     public MemcachedClient clone() throws CloneNotSupportedException {
-        memcached_st source = this.memcached_st;
-        memcached_st dest = memcached_clone(null, source);
+        memcached_st dest = memcached_clone(null, memcached_st);
         if(null == dest){
             throw new CloneNotSupportedException("memcached_clone() failed.");
         }
         return new MemcachedClient(dest);
     }
     
-    protected MemcachedClient newInstance(memcached_st memcached_st){
+    protected static MemcachedClient newInstance(memcached_st memcached_st){
         return new MemcachedClient(memcached_st);
     }
     
@@ -120,23 +132,23 @@ public class MemcachedClient {
     }
     
     public MemcachedServer createServer(String key) throws LibMemcachedException {
-        return new MemcachedServer(this, key);
+        return new MemcachedServer(memcached_server_by_key(memcached_st, key));
     }
     
     public MemcachedStats createStats(String args) throws LibMemcachedException {
-        return new MemcachedStats(this, args);
+        return new MemcachedStats(memcached_st, memcached_stat(memcached_st, args));
     }
     
     public MemcachedAnalyze createAnalyze(MemcachedStats stats) throws LibMemcachedException {
-        return new MemcachedAnalyze(this, stats);
+        return new MemcachedAnalyze(memcached_analyze(memcached_st, stats.stat_st));
     }
     
     public MemcachedResult createResult(){
-        return new MemcachedResult(this);
+        return new MemcachedResult(memcached_result_create(memcached_st));
     }
     
     public MemcachedPool createPool(int initial, int max){
-        return new MemcachedPool(this, initial, max);
+        return new MemcachedPool(memcached_pool_create(memcached_st, initial, max));
     }
     
     public void quit(){
@@ -144,6 +156,10 @@ public class MemcachedClient {
     }
     
     public void free(){
+        if(free.getAndSet(true)){
+            return ;
+        }
+        
         memcached_free(memcached_st);
     }
 

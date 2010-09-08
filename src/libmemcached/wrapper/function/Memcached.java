@@ -22,7 +22,7 @@ public class Memcached extends Function {
     }
     
     public static ReturnType memcached_push(memcached_st destination, memcached_st source){
-        int rc = getMemcached().memcached_push(destination, source);
+        final int rc = getMemcached().memcached_push(destination, source);
         return ReturnType.get(rc);
     }
 

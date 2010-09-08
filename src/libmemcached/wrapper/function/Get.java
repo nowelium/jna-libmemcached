@@ -60,8 +60,9 @@ public class Get extends Function {
         if(!ReturnType.SUCCESS.equalValue(rc)){
             throw new LibMemcachedException(memcached_strerror(ptr, rc));
         }
-        final String value = result.substring(0, value_length.getValue());
-        return new SimpleResult(key, value, value_length.getValue(), flags.getValue());
+        final int valuelen = value_length.getValue();
+        final String value = result.substring(0, valuelen);
+        return new SimpleResult(key, value, valuelen, flags.getValue());
     }
     
     public static ReturnType memcached_mget(memcached_st ptr, String...keys){
@@ -138,16 +139,27 @@ public class Get extends Function {
         
         final int keylen = key_length.getValue();
         final int valuelen = value_length.getValue();
+        
         final String key = byteToString(returnKey, 0, keylen);
         final String value = byteToString(result.getBytes(), 0, valuelen);
+        
+        /*
+        final byte[] keyBuf = new byte[keylen];
+        System.arraycopy(returnKey, 0, keyBuf, 0, keylen);
+        final byte[] valueBuf = new byte[valuelen];
+        System.arraycopy(result.getBytes(), 0, valueBuf, 0, valuelen);
+        
+        final String key = new String(keyBuf, charset);
+        final String value = new String(valueBuf, charset);
+        */
         return new SimpleResult(key, value, valuelen, flags.getValue());
     }
     
     protected static String byteToString(byte[] bytes, int position, int limit){
         // TODO: this should not be hardcoded to 1024 bytes
         // TODO: allocate or allocateDirect
-        // ByteBuffer buffer = ByteBuffer.allocateDirect(1024);
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        //final ByteBuffer buffer = ByteBuffer.allocate(1024);
+        final ByteBuffer buffer = ByteBuffer.allocateDirect(1024);
         buffer.put(bytes);
         buffer.position(position);
         buffer.limit(limit);

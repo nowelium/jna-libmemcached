@@ -37,6 +37,7 @@ public class MemcachedStorageTest {
             servers = null;
         }
         client.getBehavior().set(BehaviorType.SUPPORT_CAS, 0);
+        client.free();
         client = null;
     }
     

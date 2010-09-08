@@ -9,7 +9,7 @@ import libmemcached.wrapper.type.ReturnType;
 public class Hash extends Function {
     
     public static int memcached_generate_hash_value(String key, HashType hash_algorithm){
-        size_t key_length = new size_t(key.length());
+        final size_t key_length = new size_t(key.length());
         return getMemcached().memcached_generate_hash_value(key, key_length, hash_algorithm.getValue());
     }
     
@@ -18,12 +18,12 @@ public class Hash extends Function {
     }
     
     public static ReturnType memcached_set_hashkit(memcached_st ptr, hashkit_st hashk){
-        int rc = getMemcached().memcached_set_hashkit(ptr, hashk);
+        final int rc = getMemcached().memcached_set_hashkit(ptr, hashk);
         return ReturnType.get(rc);
     }
     
     public static int memcached_generate_hash(memcached_st ptr, String key){
-        size_t key_length = new size_t(key.length());
+        final size_t key_length = new size_t(key.length());
         return getMemcached().memcached_generate_hash(ptr, key, key_length);
     }
     

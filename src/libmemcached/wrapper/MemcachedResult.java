@@ -1,7 +1,6 @@
 package libmemcached.wrapper;
 
 import static libmemcached.wrapper.function.Result.memcached_result_cas;
-import static libmemcached.wrapper.function.Result.memcached_result_create;
 import static libmemcached.wrapper.function.Result.memcached_result_flags;
 import static libmemcached.wrapper.function.Result.memcached_result_free;
 import static libmemcached.wrapper.function.Result.memcached_result_key_length;
@@ -12,24 +11,22 @@ import static libmemcached.wrapper.function.Result.memcached_result_set_expirati
 import static libmemcached.wrapper.function.Result.memcached_result_set_flags;
 import static libmemcached.wrapper.function.Result.memcached_result_set_value;
 import static libmemcached.wrapper.function.Result.memcached_result_value;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import libmemcached.result.memcached_result_st;
 import libmemcached.wrapper.type.ReturnType;
 
 public class MemcachedResult {
     
-    protected final MemcachedClient memcached;
+    protected final AtomicBoolean free = new AtomicBoolean(false);
     
     protected final memcached_result_st result_st;
     
-    protected MemcachedResult(MemcachedClient memcached){
-        this(memcached, memcached_result_create(memcached.memcached_st));
-    }
-    
-    protected MemcachedResult(MemcachedClient memcached, memcached_result_st result_st){
-        this.memcached = memcached;
+    protected MemcachedResult(memcached_result_st result_st){
         this.result_st = result_st;
     }
-
+    
     public String getKey(){
         return memcached_result_key_value(result_st);
     }
@@ -71,6 +68,10 @@ public class MemcachedResult {
     }
     
     public void free(){
+        if(free.getAndSet(true)){
+            return ;
+        }
+        
         memcached_result_free(result_st);
     }
 

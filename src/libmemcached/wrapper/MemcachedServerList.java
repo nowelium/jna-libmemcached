@@ -7,18 +7,22 @@ import static libmemcached.wrapper.function.ServerList.memcached_server_list_cou
 import static libmemcached.wrapper.function.ServerList.memcached_server_list_free;
 import static libmemcached.wrapper.function.ServerList.memcached_server_push;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import libmemcached.exception.LibMemcachedException;
+import libmemcached.memcached.memcached_st;
 import libmemcached.types.memcached_server_list_st;
 import libmemcached.wrapper.type.ReturnType;
 
 public class MemcachedServerList {
     
-    protected final MemcachedClient memcached;
+    protected final AtomicBoolean free = new AtomicBoolean(false);
     
     protected final Lock lock = new ReentrantLock();
+    
+    protected final memcached_st memcached_st;
     
     protected memcached_server_list_st server_st = null;
 
@@ -33,8 +37,8 @@ public class MemcachedServerList {
 //        }
 //    };
     
-    protected MemcachedServerList(MemcachedClient memcached){
-        this.memcached = memcached;
+    protected MemcachedServerList(memcached_st memcached_st){
+        this.memcached_st = memcached_st;
     }
     
     public MemcachedServerList append(String hostname, int port) throws LibMemcachedException {
@@ -84,7 +88,7 @@ public class MemcachedServerList {
         lock.lock();
         
         try {
-            return memcached_server_push(memcached.memcached_st, server_st);
+            return memcached_server_push(memcached_st, server_st);
         } finally {
             lock.unlock();
         }
@@ -92,6 +96,10 @@ public class MemcachedServerList {
     
     public void free(){
         if(null != server_st){
+            if(free.getAndSet(true)){
+                return ;
+            }
+            
             memcached_server_list_free(server_st);
         }
     }
