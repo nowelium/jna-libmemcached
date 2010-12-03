@@ -3,14 +3,12 @@ package libmemcached.wrapper;
 import static libmemcached.wrapper.function.Stats.memcached_stat_free;
 import static libmemcached.wrapper.function.Stats.memcached_stat_get_keys;
 import static libmemcached.wrapper.function.Stats.memcached_stat_get_value;
-import static libmemcached.wrapper.function.Stats.memcached_stat_servername;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import libmemcached.exception.LibMemcachedException;
 import libmemcached.memcached.memcached_st;
 import libmemcached.stats.memcached_stat_st;
-import libmemcached.wrapper.type.ReturnType;
 
 public class MemcachedStats {
     
@@ -34,10 +32,6 @@ public class MemcachedStats {
         this.stat_st = stat_st;
     }
     
-    public ReturnType serverName(String args, String hostname, int port){
-        return memcached_stat_servername(stat_st, args, hostname, port);
-    }
-
     public String getValue(String key) throws LibMemcachedException {
         return memcached_stat_get_value(memcached_st, stat_st, key);
     }

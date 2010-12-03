@@ -135,8 +135,16 @@ public class MemcachedClient {
         return new MemcachedServer(memcached_server_by_key(memcached_st, key));
     }
     
+    public MemcachedStats createStats(String args, String hostname, int port) throws LibMemcachedException {
+        return new MemcachedStats(memcached_st, memcached_stat(memcached_st, args, hostname, port));
+    }
+    
     public MemcachedStats createStats(String args) throws LibMemcachedException {
         return new MemcachedStats(memcached_st, memcached_stat(memcached_st, args));
+    }
+    
+    public MemcachedStats createStats() throws LibMemcachedException {
+        return new MemcachedStats(memcached_st, memcached_stat(memcached_st));
     }
     
     public MemcachedAnalyze createAnalyze(MemcachedStats stats) throws LibMemcachedException {
